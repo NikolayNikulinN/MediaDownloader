@@ -1,0 +1,18 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="ApplicationBinaries" Directory="INSTALLFOLDER">
+      <Component Id="ApplicationFiles" Guid="0A34B7C5-F173-4F80-82ED-1A54AA84ED98">
+        <File Id="MediaDownloaderExe" Source="$(var.MediaDownloader.TargetDir)MediaDownloader.exe" KeyPath="yes" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.deps.json" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.runtimeconfig.json" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.Presentation.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)CommunityToolkit.Mvvm.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Microsoft.Extensions.DependencyInjection.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Wpf.Ui.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Wpf.Ui.Abstractions.dll" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

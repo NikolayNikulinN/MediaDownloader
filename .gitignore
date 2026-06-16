@@ -361,3 +361,38 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# JetBrains Rider / ReSharper caches
+.idea/
+*.sln.iml
+
+# VS Code local workspace settings
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local agent/tooling state
+.agents/
+.codex/
+
+# WiX / installer build outputs
+*.msi
+*.msm
+*.msp
+*.wixpdb
+*.wixobj
+*.cab
+*.burn.exe
+*.bundle.exe
+
+# .NET publish and single-file artifacts
+**/[Pp]ublish/
+*.deps.json
+*.runtimeconfig.json
+
+# Local app/runtime temp files
+*.dmp
+*.trace
+*.etl

@@ -1,0 +1,62 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?define Manufacturer = "dLiX Software" ?>
+  <?define ProductName = "MediaDownloader" ?>
+  <?define UpgradeCode = "2A6BFC4E-0916-4702-AE9A-8817D74C83DD" ?>
+
+  <Package
+    Name="$(var.ProductName)"
+    Manufacturer="$(var.Manufacturer)"
+    Version="$(var.ProductVersion)"
+    UpgradeCode="$(var.UpgradeCode)"
+    Scope="perMachine">
+
+    <MajorUpgrade
+      AllowDowngrades="no"
+      AllowSameVersionUpgrades="no"
+      DowngradeErrorMessage="A newer or same version of [ProductName] is already installed." />
+
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="AppIcon.ico" SourceFile="..\MediaDownloader.Presentation\Icons\appIcon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="DesktopShortcutComponent" Guid="8A69E79B-E0EE-4F76-BA2F-215C575340BB">
+        <Shortcut
+          Id="DesktopShortcut"
+          Name="$(var.ProductName)"
+          Description="$(var.ProductName)"
+          Target="[INSTALLFOLDER]MediaDownloader.exe"
+          WorkingDirectory="INSTALLFOLDER"
+          Icon="AppIcon.ico" />
+        <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)">
+        <Component Id="StartMenuShortcutComponent" Guid="D6386264-6EBE-4F17-8817-F82E08EFF88D">
+          <Shortcut
+            Id="StartMenuShortcut"
+            Name="$(var.ProductName)"
+            Description="$(var.ProductName)"
+            Target="[INSTALLFOLDER]MediaDownloader.exe"
+            WorkingDirectory="INSTALLFOLDER"
+            Icon="AppIcon.ico" />
+          <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+          <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="$(var.ProductName)" Level="1">
+      <ComponentGroupRef Id="ApplicationBinaries" />
+      <ComponentRef Id="DesktopShortcutComponent" />
+      <ComponentRef Id="StartMenuShortcutComponent" />
+    </Feature>
+  </Package>
+</Wix>
