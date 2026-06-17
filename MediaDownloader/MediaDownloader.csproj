@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaDownloader.Presentation\MediaDownloader.Presentation.csproj" />
+    <ProjectReference Include="..\MediaDownloader.Logger\MediaDownloader.Logger.csproj" />
+    <ProjectReference Include="..\MediaDownloader.Services\MediaDownloader.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

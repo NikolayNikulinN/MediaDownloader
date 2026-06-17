@@ -1,3 +1,5 @@
+using MediaDownloader.Logger;
+using MediaDownloader.Logger.Abstract;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
 using MediaDownloader.ViewModels;
@@ -39,6 +41,7 @@ namespace MediaDownloader
         {
             services.AddSingleton<AppConstants>();
             services.AddSingleton<ResourceWrapper>();
+            services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
             services.AddSingleton<HomePageViewModel>();
             services.AddSingleton<MainPageViewModel>();
             services.AddSingleton<MainPage>();
