@@ -45,6 +45,8 @@ namespace MediaDownloader
             services.AddSingleton<ResourceWrapper>();
             services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
             services.AddSingleton<IXmlWrapper, XmlWrapper>();
+            services.AddSingleton<IYtDlpService, YtDlpService>();
+            services.AddSingleton<IFfmpegService, FfmpegService>();
             services.AddSingleton<HomePageViewModel>();
             services.AddSingleton<MainPageViewModel>();
             services.AddSingleton<MainPage>();

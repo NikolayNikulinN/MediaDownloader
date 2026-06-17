@@ -1,6 +1,14 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MediaDownloader.Logger.Abstract;
+using MediaDownloader.Logger.Constants;
+using MediaDownloader.Logger.Enums;
+using MediaDownloader.Presentation.Resources;
+using MediaDownloader.Services.Abstract;
+using MediaDownloader.Services.Models;
 using Microsoft.Win32;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 
@@ -8,13 +16,46 @@ namespace MediaDownloader.ViewModels
 {
     public sealed class HomePageViewModel : ObservableObject
     {
+        private readonly IYtDlpService ytDlpService;
+        private readonly ILoggerWrapper loggerWrapper;
+        private readonly ResourceWrapper resourceWrapper;
         private string outputFolder;
+        private string url = string.Empty;
+        private string analysisStatus = string.Empty;
+        private bool isAnalyzing;
 
-        public HomePageViewModel()
+        public HomePageViewModel(
+            IYtDlpService ytDlpService,
+            ILoggerWrapper loggerWrapper,
+            ResourceWrapper resourceWrapper)
         {
+            ArgumentNullException.ThrowIfNull(ytDlpService);
+            ArgumentNullException.ThrowIfNull(loggerWrapper);
+            ArgumentNullException.ThrowIfNull(resourceWrapper);
+
+            this.ytDlpService = ytDlpService;
+            this.loggerWrapper = loggerWrapper;
+            this.resourceWrapper = resourceWrapper;
+
             outputFolder = GetDefaultOutputFolder();
+            UrlItems = [];
+            UrlItems.CollectionChanged += UrlItems_CollectionChanged;
+            AnalyzeUrlCommand = new AsyncRelayCommand(AnalyzeUrlAsync, CanAnalyzeUrl);
             BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
             OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
+        }
+
+        public string Url
+        {
+            get => url;
+            set
+            {
+                if (SetProperty(ref url, value))
+                {
+                    OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
+                    AnalyzeUrlCommand.NotifyCanExecuteChanged();
+                }
+            }
         }
 
         public string OutputFolder
@@ -22,6 +63,39 @@ namespace MediaDownloader.ViewModels
             get => outputFolder;
             set => SetProperty(ref outputFolder, value);
         }
+
+        public string AnalysisStatus
+        {
+            get => analysisStatus;
+            private set => SetProperty(ref analysisStatus, value);
+        }
+
+        public bool IsAnalyzing
+        {
+            get => isAnalyzing;
+            private set
+            {
+                if (SetProperty(ref isAnalyzing, value))
+                {
+                    OnPropertyChanged(nameof(IsUrlInputEnabled));
+                    OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
+                    AnalyzeUrlCommand.NotifyCanExecuteChanged();
+                }
+            }
+        }
+
+        public bool IsUrlInputEnabled => !IsAnalyzing;
+
+        public bool IsUrlPlaceholderVisible =>
+            IsUrlInputEnabled && string.IsNullOrWhiteSpace(Url);
+
+        public bool IsNoDataVisible => UrlItems.Count == 0;
+
+        public ObservableCollection<UrlMediaItem> UrlItems { get; }
+
+        public ResourceWrapper ResourceWrapper => resourceWrapper;
+
+        public IAsyncRelayCommand AnalyzeUrlCommand { get; }
 
         public IRelayCommand BrowseOutputFolderCommand { get; }
 
@@ -34,7 +108,7 @@ namespace MediaDownloader.ViewModels
         {
             var dialog = new OpenFolderDialog
             {
-                Title = "Select download folder",
+                Title = ResourceWrapper.SelectDownloadFolderTitle,
                 InitialDirectory = Directory.Exists(OutputFolder)
                     ? OutputFolder
                     : GetDefaultOutputFolder()
@@ -60,6 +134,39 @@ namespace MediaDownloader.ViewModels
                 FileName = OutputFolder,
                 UseShellExecute = true
             });
+        }
+
+        private bool CanAnalyzeUrl() =>
+            !IsAnalyzing && !string.IsNullOrWhiteSpace(Url);
+
+        private void UrlItems_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsNoDataVisible));
+        }
+
+        private async Task AnalyzeUrlAsync()
+        {
+            try
+            {
+                IsAnalyzing = true;
+                AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
+
+                var mediaItem = await ytDlpService.GetMediaInfoAsync(Url);
+                mediaItem.DownloadStatus = ResourceWrapper.ReadyStatus;
+                UrlItems.Add(mediaItem);
+
+                Url = string.Empty;
+                AnalysisStatus = string.Empty;
+            }
+            catch (Exception exception)
+            {
+                AnalysisStatus = exception.Message;
+                loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
+            }
+            finally
+            {
+                IsAnalyzing = false;
+            }
         }
     }
 }

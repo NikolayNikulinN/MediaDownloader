@@ -11,7 +11,13 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Light" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="/MediaDownloader.Presentation;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="/MediaDownloader.Presentation;component/Styles/TextBoxes.xaml" />
+                <ResourceDictionary Source="/MediaDownloader.Presentation;component/Styles/Buttons.xaml" />
+                <ResourceDictionary Source="/MediaDownloader.Presentation;component/Styles/Lists.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <locators:ViewModelLocator x:Key="ViewModelLocator" />
 

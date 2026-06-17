@@ -113,4 +113,49 @@
 	<data name="CloseToolTip" xml:space="preserve">
 		<value>Close</value>
 	</data>
+	<data name="AnalyzeUrlButtonText" xml:space="preserve">
+		<value>Analyze URL</value>
+	</data>
+	<data name="YouTubeUrlToolTip" xml:space="preserve">
+		<value>YouTube URL</value>
+	</data>
+	<data name="UrlPlaceholder" xml:space="preserve">
+		<value>Paste YouTube URL</value>
+	</data>
+	<data name="SaveToLabel" xml:space="preserve">
+		<value>Save to</value>
+	</data>
+	<data name="DownloadFolderToolTip" xml:space="preserve">
+		<value>Download folder</value>
+	</data>
+	<data name="BrowseButtonText" xml:space="preserve">
+		<value>Browse</value>
+	</data>
+	<data name="OpenFolderToolTip" xml:space="preserve">
+		<value>Open folder</value>
+	</data>
+	<data name="DownloadToolTip" xml:space="preserve">
+		<value>Download</value>
+	</data>
+	<data name="MediaModeToolTip" xml:space="preserve">
+		<value>MP4 / MP3</value>
+	</data>
+	<data name="Mp4Label" xml:space="preserve">
+		<value>MP4</value>
+	</data>
+	<data name="Mp3Label" xml:space="preserve">
+		<value>MP3</value>
+	</data>
+	<data name="SelectDownloadFolderTitle" xml:space="preserve">
+		<value>Select download folder</value>
+	</data>
+	<data name="AnalyzingUrlStatus" xml:space="preserve">
+		<value>Analyzing URL...</value>
+	</data>
+	<data name="ReadyStatus" xml:space="preserve">
+		<value>Ready</value>
+	</data>
+	<data name="NoDataText" xml:space="preserve">
+		<value>No data</value>
+	</data>
 </root>

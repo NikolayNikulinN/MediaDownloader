@@ -1,3 +1,5 @@
+using MediaDownloader.Services.Constants;
+
 namespace MediaDownloader.Services.Models;
 
 public sealed class UrlMediaItem
@@ -18,5 +20,9 @@ public sealed class UrlMediaItem
 
     public string SelectedVideoQuality { get; set; } = string.Empty;
 
-    public List<string> AvailableVideoQualities { get; set; } = [];
+    public List<VideoQualityOption> AvailableVideoQualities { get; set; } = [];
+
+    public int DownloadProgress { get; set; }
+
+    public string DownloadStatus { get; set; } = ServiceConstants.Media.DownloadStatusReady;
 }
