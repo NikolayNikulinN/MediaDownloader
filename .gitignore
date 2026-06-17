@@ -377,6 +377,10 @@ FodyWeavers.xsd
 .agents/
 .codex/
 
+# Downloaded media tools
+MediaDownloader.Services/Tools/*.exe
+!MediaDownloader.Services/Tools/.gitkeep
+
 # WiX / installer build outputs
 *.msi
 *.msm

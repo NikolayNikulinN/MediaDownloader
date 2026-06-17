@@ -2,6 +2,8 @@ using MediaDownloader.Logger;
 using MediaDownloader.Logger.Abstract;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
+using MediaDownloader.Services;
+using MediaDownloader.Services.Abstract;
 using MediaDownloader.ViewModels;
 using MediaDownloader.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +44,7 @@ namespace MediaDownloader
             services.AddSingleton<AppConstants>();
             services.AddSingleton<ResourceWrapper>();
             services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
+            services.AddSingleton<IXmlWrapper, XmlWrapper>();
             services.AddSingleton<HomePageViewModel>();
             services.AddSingleton<MainPageViewModel>();
             services.AddSingleton<MainPage>();
