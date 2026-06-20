@@ -1,6 +1,9 @@
-﻿namespace MediaDownloader.Presentation.Constants
+namespace MediaDownloader.Presentation.Constants;
+
+/// <summary>
+/// Provides reusable non-localized application constants.
+/// </summary>
+public sealed class CommonConstants
 {
-    public sealed class CommonConstants
-    {
-    }
+    public string DownloadsFolderName => "Downloads";
 }

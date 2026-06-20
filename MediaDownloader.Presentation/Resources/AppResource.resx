@@ -186,4 +186,7 @@
   <data name="ErrorPopupTitle" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="OkButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
 </root>

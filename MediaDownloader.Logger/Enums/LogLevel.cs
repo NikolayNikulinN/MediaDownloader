@@ -1,9 +1,11 @@
-﻿namespace MediaDownloader.Logger.Enums
+namespace MediaDownloader.Logger.Enums;
+
+/// <summary>
+/// Defines supported application log levels.
+/// </summary>
+public enum LogLevel
 {
-    public enum LogLevel
-    {
-        Info,
-        Warning,
-        Error
-    }
+    Info,
+    Warning,
+    Error
 }

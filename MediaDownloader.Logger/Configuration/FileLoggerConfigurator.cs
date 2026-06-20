@@ -2,27 +2,13 @@ using MediaDownloader.Logger.Constants;
 using Serilog;
 using Serilog.Events;
 
-namespace MediaDownloader.Logger;
+namespace MediaDownloader.Logger.Configuration;
 
-public static class FileLoggerConfigurator
+internal static class FileLoggerConfigurator
 {
     private static readonly object SyncRoot = new();
     private static bool isConfigured;
     private static string? logDirectoryPath;
-
-    public static string LogDirectoryPath
-    {
-        get
-        {
-            EnsureConfigured();
-            return logDirectoryPath!;
-        }
-    }
-
-    public static string LogFilePathPattern => Path.Combine(LogDirectoryPath, LogConstants.LogFileName);
-
-    public static void Configure() =>
-        EnsureConfigured();
 
     public static ILogger GetLogger()
     {
@@ -94,7 +80,11 @@ public static class FileLoggerConfigurator
         try
         {
             Directory.CreateDirectory(directoryPath);
-            var probeFilePath = Path.Combine(directoryPath, $".write-test-{Guid.NewGuid():N}.tmp");
+            var probeFileName = string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                LogConstants.WriteProbeFileNameFormat,
+                Guid.NewGuid());
+            var probeFilePath = Path.Combine(directoryPath, probeFileName);
 
             using (File.Create(probeFilePath))
             {

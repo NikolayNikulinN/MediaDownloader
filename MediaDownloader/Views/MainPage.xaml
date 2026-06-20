@@ -6,7 +6,6 @@
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:viewModels="clr-namespace:MediaDownloader.ViewModels"
                  mc:Ignorable="d"
-                 DataContext="{Binding MainPageViewModel, Source={StaticResource ViewModelLocator}}"
                  d:DataContext="{d:DesignInstance Type=viewModels:MainPageViewModel}"
                  WindowStartupLocation="CenterScreen"
                  ExtendsContentIntoTitleBar="True"
@@ -16,7 +15,7 @@
                  Title="{Binding ResourceWrapper.AppTitle}"
                  Height="800"
                  Width="1200"
-                 StateChanged="Window_StateChanged">
+                 StateChanged="WindowStateChanged">
     <Border BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8"
@@ -29,7 +28,7 @@
 
             <Grid Grid.Row="0"
                   Background="{DynamicResource LayerFillColorDefaultBrush}"
-                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                  MouseLeftButtonDown="TitleBarMouseLeftButtonDown">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -60,7 +59,7 @@
                             VerticalAlignment="Center"
                             Margin="0,0,6,0">
                     <ui:Button Style="{StaticResource TitleBarImageButtonStyle}"
-                               Click="MinimizeButton_Click"
+                               Click="MinimizeButtonClick"
                                ToolTip="{Binding ResourceWrapper.MinimizeToolTip}">
                         <Image Source="{Binding AppConstants.Images.MinimizePath}"
                                Width="22"
@@ -69,7 +68,7 @@
                     </ui:Button>
 
                     <ui:Button Style="{StaticResource TitleBarImageButtonStyle}"
-                               Click="MaximizeRestoreButton_Click"
+                               Click="MaximizeRestoreButtonClick"
                                ToolTip="{Binding MaximizeRestoreToolTip}">
                         <Image Source="{Binding MaximizeRestoreIconPath}"
                                Width="22"
@@ -78,7 +77,7 @@
                     </ui:Button>
 
                     <ui:Button Style="{StaticResource TitleBarImageButtonStyle}"
-                               Click="CloseButton_Click"
+                               Click="CloseButtonClick"
                                ToolTip="{Binding ResourceWrapper.CloseToolTip}">
                         <Image Source="{Binding AppConstants.Images.ClosePath}"
                                Width="22"

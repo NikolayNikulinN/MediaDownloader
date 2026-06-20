@@ -2,6 +2,9 @@ using MediaDownloader.Services.Constants;
 
 namespace MediaDownloader.Services.Models;
 
+/// <summary>
+/// Contains media metadata returned by the analysis service.
+/// </summary>
 public sealed class UrlMediaItem
 {
     public string Url { get; set; } = string.Empty;

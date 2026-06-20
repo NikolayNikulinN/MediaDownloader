@@ -103,7 +103,7 @@
                        Cursor="Hand"
                        ToolTip="{Binding ResourceWrapper.OpenFolderToolTip}"
                        Command="{Binding OpenOutputFolderCommand}">
-                <Image Source="/MediaDownloader.Presentation;component/Images/folder.png"
+                <Image Source="{Binding AppConstants.Images.FolderPath}"
                        Width="28"
                        Height="24"
                        Stretch="Uniform" />
@@ -241,6 +241,7 @@
                                 <ToggleButton Style="{StaticResource MediaModeToggleStyle}"
                                               Content="{Binding DataContext.ResourceWrapper.Mp4Label, RelativeSource={RelativeSource AncestorType=ListBox}}"
                                               Tag="{Binding DataContext.ResourceWrapper.Mp3Label, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                              IsChecked="{Binding IsAudioSelected, Mode=TwoWay}"
                                               ToolTip="{Binding DataContext.ResourceWrapper.MediaModeToolTip, RelativeSource={RelativeSource AncestorType=ListBox}}" />
                                 <ui:Button Width="36"
                                            Height="36"

@@ -1,7 +1,13 @@
 namespace MediaDownloader.Services.Constants;
 
+/// <summary>
+/// Provides constants used by backend media services.
+/// </summary>
 public static class ServiceConstants
 {
+    /// <summary>
+    /// Provides external tool constants.
+    /// </summary>
     public static class Tools
     {
         public const string FolderName = "Tools";
@@ -15,6 +21,9 @@ public static class ServiceConstants
         public const string VersionArgument = "-version";
     }
 
+    /// <summary>
+    /// Provides yt-dlp command-line constants.
+    /// </summary>
     public static class YtDlp
     {
         public const string DumpJsonArgument = "--dump-json";
@@ -24,6 +33,9 @@ public static class ServiceConstants
         public const string NoPlaylistArgument = "--no-playlist";
     }
 
+    /// <summary>
+    /// Provides yt-dlp JSON property names.
+    /// </summary>
     public static class Json
     {
         public const string Title = "title";
@@ -51,6 +63,9 @@ public static class ServiceConstants
         public const string Height = "height";
     }
 
+    /// <summary>
+    /// Provides media-related constants.
+    /// </summary>
     public static class Media
     {
         public const string Mp4 = "MP4";
@@ -60,6 +75,9 @@ public static class ServiceConstants
         public const string VideoQualityNameFormat = "{0}p";
     }
 
+    /// <summary>
+    /// Provides date and duration formats.
+    /// </summary>
     public static class DateTimeFormats
     {
         public const string DurationWithHours = @"h\:mm\:ss";
@@ -71,6 +89,9 @@ public static class ServiceConstants
         public const string DisplayDate = "dd.MM.yyyy";
     }
 
+    /// <summary>
+    /// Provides XML element names.
+    /// </summary>
     public static class Xml
     {
         public const string RootName = "MediaDownloaderState";

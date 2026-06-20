@@ -1,73 +1,126 @@
-using MediaDownloader.Presentation.Enums;
+using MediaDownloader.Presentation.Abstract;
+using MediaDownloader.Presentation.Constants;
+using MediaDownloader.Presentation.Controls;
 using MediaDownloader.Presentation.Resources;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace MediaDownloader.Presentation.Utils
+namespace MediaDownloader.Presentation.Services;
+
+/// <summary>
+/// Displays modal Fluent UI popup windows.
+/// </summary>
+public sealed class UiPopupUtil : IUiPopupUtil
 {
-    public static class UiPopupUtil
+    private readonly AppConstants appConstants;
+    private readonly ResourceWrapper resourceWrapper;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UiPopupUtil"/> class.
+    /// </summary>
+    /// <param name="appConstants">Application constants.</param>
+    /// <param name="resourceWrapper">Localized UI resources.</param>
+    public UiPopupUtil(AppConstants appConstants, ResourceWrapper resourceWrapper)
     {
-        private static readonly ResourceWrapper Resources = new();
+        ArgumentNullException.ThrowIfNull(appConstants);
+        ArgumentNullException.ThrowIfNull(resourceWrapper);
 
-        public static void ShowMessage(
-                                        string message,
-                                        Window? owner = null) =>
-                                        Show(message, Resources.InformationPopupTitle, UiPopupType.Information, owner);
+        this.appConstants = appConstants;
+        this.resourceWrapper = resourceWrapper;
+    }
 
-        public static void ShowWarning(
-                                        string message,
-                                        Window? owner = null) =>
-                                        Show(message, Resources.WarningPopupTitle, UiPopupType.Warning, owner);
+    /// <inheritdoc />
+    public void ShowMessage(string message) =>
+        Show(
+            message,
+            resourceWrapper.InformationPopupTitle,
+            resourceWrapper.OkButtonText,
+            appConstants.Images.InformationPath,
+            resourceWrapper.CloseToolTip,
+            appConstants.Images.ClosePath);
 
-        public static void ShowError(
-                                     string message,
-                                     Window? owner = null) =>
-                                     Show(message, Resources.ErrorPopupTitle, UiPopupType.Error, owner);
+    /// <inheritdoc />
+    public void ShowWarning(string message) =>
+        Show(
+            message,
+            resourceWrapper.WarningPopupTitle,
+            resourceWrapper.OkButtonText,
+            appConstants.Images.WarningPath,
+            resourceWrapper.CloseToolTip,
+            appConstants.Images.ClosePath);
 
-        private static void Show(
-                                  string message,
-                                  string title,
-                                  UiPopupType type,
-                                  Window? owner = null)
+    /// <inheritdoc />
+    public void ShowError(string message) =>
+        Show(
+            message,
+            resourceWrapper.ErrorPopupTitle,
+            resourceWrapper.OkButtonText,
+            appConstants.Images.ErrorPath,
+            resourceWrapper.CloseToolTip,
+            appConstants.Images.ClosePath);
+
+    private static void Show(
+        string message,
+        string title,
+        string buttonText,
+        string iconPath,
+        string closeToolTip,
+        string closeIconPath)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+
+        var dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+        if (!dispatcher.CheckAccess())
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(message);
-            ArgumentException.ThrowIfNullOrWhiteSpace(title);
-
-            var dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
-            if (!dispatcher.CheckAccess())
-            {
-                dispatcher.Invoke(() => ShowCore(message, title, type, owner));
-                return;
-            }
-
-            ShowCore(message, title, type, owner);
+            dispatcher.Invoke(
+                () => ShowCore(
+                    message,
+                    title,
+                    buttonText,
+                    iconPath,
+                    closeToolTip,
+                    closeIconPath));
+            return;
         }
 
-        private static void ShowCore(
-                                     string message,
-                                     string title,
-                                     UiPopupType type,
-                                     Window? owner)
+        ShowCore(message, title, buttonText, iconPath, closeToolTip, closeIconPath);
+    }
+
+    private static void ShowCore(
+        string message,
+        string title,
+        string buttonText,
+        string iconPath,
+        string closeToolTip,
+        string closeIconPath)
+    {
+        var popup = new UiPopupWindow(
+            message,
+            title,
+            buttonText,
+            iconPath,
+            closeToolTip,
+            closeIconPath);
+        var popupOwner = FindActiveWindow();
+
+        if (popupOwner is { IsVisible: true } && popupOwner != popup)
         {
-            var popup = new UiPopupWindow(message, title, type);
-            var popupOwner = owner ?? FindActiveWindow();
-
-            if (popupOwner is { IsVisible: true } && popupOwner != popup)
-            {
-                popup.Owner = popupOwner;
-            }
-
-            popup.ShowDialog();
+            popup.Owner = popupOwner;
         }
 
-        private static Window? FindActiveWindow()
-        {
-            if (Application.Current is null)
-            {
-                return null;
-            }
+        popup.ShowDialog();
+    }
 
-            return Application.Current.Windows.OfType<Window>().FirstOrDefault(window => window.IsActive) ?? Application.Current.MainWindow;
+    private static Window? FindActiveWindow()
+    {
+        if (Application.Current is null)
+        {
+            return null;
         }
+
+        return Application.Current.Windows
+                   .OfType<Window>()
+                   .FirstOrDefault(window => window.IsActive)
+               ?? Application.Current.MainWindow;
     }
 }

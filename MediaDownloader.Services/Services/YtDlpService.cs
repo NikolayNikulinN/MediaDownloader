@@ -4,22 +4,31 @@ using MediaDownloader.Logger.Enums;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Models;
+using MediaDownloader.Services.Utils;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 
-namespace MediaDownloader.Services.Concreate;
+namespace MediaDownloader.Services.Services;
 
+/// <summary>
+/// Uses yt-dlp to retrieve metadata for media URLs.
+/// </summary>
 public sealed class YtDlpService : IYtDlpService
 {
     private readonly ILoggerWrapper loggerWrapper;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="YtDlpService"/> class.
+    /// </summary>
+    /// <param name="loggerWrapper">Application logger.</param>
     public YtDlpService(ILoggerWrapper loggerWrapper)
     {
         ArgumentNullException.ThrowIfNull(loggerWrapper);
         this.loggerWrapper = loggerWrapper;
     }
 
+    /// <inheritdoc />
     public async Task<UrlMediaItem> GetMediaInfoAsync(string url, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(url);
@@ -47,6 +56,11 @@ public sealed class YtDlpService : IYtDlpService
 
         using var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException(LogConstants.YtDlpStartFailed);
+
+        // Cancelling managed reads does not terminate yt-dlp, so explicitly stop
+        // the process tree to avoid leaving a background downloader running.
+        using var cancellationRegistration = cancellationToken.Register(
+            () => ProcessUtil.TryKill(process));
 
         var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
         var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);

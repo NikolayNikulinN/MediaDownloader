@@ -1,63 +1,42 @@
-using MediaDownloader.Logger;
+using MediaDownloader.Extensions;
 using MediaDownloader.Logger.Abstract;
 using MediaDownloader.Logger.Constants;
-using MediaDownloader.Presentation.Constants;
-using MediaDownloader.Presentation.Resources;
-using MediaDownloader.Services.Abstract;
-using MediaDownloader.Services.Concreate;
-using MediaDownloader.ViewModels;
 using MediaDownloader.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace MediaDownloader
+namespace MediaDownloader;
+
+/// <summary>
+/// Configures and starts the WPF application.
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    private ServiceProvider? serviceProvider;
+
+    /// <inheritdoc />
+    protected override void OnStartup(StartupEventArgs e)
     {
-        private ServiceProvider? serviceProvider;
+        base.OnStartup(e);
 
-        public static IServiceProvider Services =>
-            ((App)Current).serviceProvider
-            ?? throw new InvalidOperationException("Application services are not initialized.");
+        var services = new ServiceCollection();
+        services.AddMediaDownloader();
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
+        serviceProvider = services.BuildServiceProvider();
+        serviceProvider
+            .GetRequiredService<ILoggerWrapper>()
+            .Write(LogConstants.ApplicationStarted);
+        serviceProvider.GetRequiredService<MainPage>().Show();
+    }
 
-            var services = new ServiceCollection();
-            ConfigureServices(services);
+    /// <inheritdoc />
+    protected override void OnExit(ExitEventArgs e)
+    {
+        var logger = serviceProvider?.GetService<ILoggerWrapper>();
+        logger?.Write(LogConstants.ApplicationStopped);
+        logger?.CloseAndFlush();
+        serviceProvider?.Dispose();
 
-            serviceProvider = services.BuildServiceProvider();
-            serviceProvider
-                .GetRequiredService<ILoggerWrapper>()
-                .Write(LogConstants.ApplicationStarted);
-            serviceProvider.GetRequiredService<MainPage>().Show();
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            serviceProvider?
-                .GetService<ILoggerWrapper>()?
-                .Write(LogConstants.ApplicationStopped);
-            serviceProvider?.Dispose();
-            FileLoggerConfigurator.CloseAndFlush();
-            base.OnExit(e);
-        }
-
-        private static void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<AppConstants>();
-            services.AddSingleton<ResourceWrapper>();
-            services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
-            services.AddSingleton<IXmlWrapper, XmlWrapper>();
-            services.AddSingleton<IYtDlpService, YtDlpService>();
-            services.AddSingleton<IFfmpegService, FfmpegService>();
-            services.AddSingleton<HomePageViewModel>();
-            services.AddSingleton<MainPageViewModel>();
-            services.AddSingleton<MainPage>();
-        }
+        base.OnExit(e);
     }
 }

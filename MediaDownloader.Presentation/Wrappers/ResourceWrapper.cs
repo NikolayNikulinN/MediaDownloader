@@ -1,63 +1,65 @@
 using System.Globalization;
 using System.Resources;
 
-namespace MediaDownloader.Presentation.Resources
+namespace MediaDownloader.Presentation.Resources;
+
+/// <summary>
+/// Provides localized application resources to data bindings and services.
+/// </summary>
+public sealed class ResourceWrapper
 {
-    public sealed class ResourceWrapper
-    {
-        private readonly ResourceManager resourceManager = AppResource.ResourceManager;
+    private readonly ResourceManager resourceManager = AppResource.ResourceManager;
 
-        public string AppTitle => GetString(nameof(AppTitle));
+    public string AppTitle => GetString(nameof(AppTitle));
 
-        public string MinimizeToolTip => GetString(nameof(MinimizeToolTip));
+    public string MinimizeToolTip => GetString(nameof(MinimizeToolTip));
 
-        public string MaximizeToolTip => GetString(nameof(MaximizeToolTip));
+    public string MaximizeToolTip => GetString(nameof(MaximizeToolTip));
 
-        public string RestoreToolTip => GetString(nameof(RestoreToolTip));
+    public string RestoreToolTip => GetString(nameof(RestoreToolTip));
 
-        public string CloseToolTip => GetString(nameof(CloseToolTip));
+    public string CloseToolTip => GetString(nameof(CloseToolTip));
 
-        public string AnalyzeUrlButtonText => GetString(nameof(AnalyzeUrlButtonText));
+    public string AnalyzeUrlButtonText => GetString(nameof(AnalyzeUrlButtonText));
 
-        public string YouTubeUrlToolTip => GetString(nameof(YouTubeUrlToolTip));
+    public string YouTubeUrlToolTip => GetString(nameof(YouTubeUrlToolTip));
 
-        public string UrlPlaceholder => GetString(nameof(UrlPlaceholder));
+    public string UrlPlaceholder => GetString(nameof(UrlPlaceholder));
 
-        public string SaveToLabel => GetString(nameof(SaveToLabel));
+    public string SaveToLabel => GetString(nameof(SaveToLabel));
 
-        public string DownloadFolderToolTip => GetString(nameof(DownloadFolderToolTip));
+    public string DownloadFolderToolTip => GetString(nameof(DownloadFolderToolTip));
 
-        public string BrowseButtonText => GetString(nameof(BrowseButtonText));
+    public string BrowseButtonText => GetString(nameof(BrowseButtonText));
 
-        public string OpenFolderToolTip => GetString(nameof(OpenFolderToolTip));
+    public string OpenFolderToolTip => GetString(nameof(OpenFolderToolTip));
 
-        public string DownloadToolTip => GetString(nameof(DownloadToolTip));
+    public string DownloadToolTip => GetString(nameof(DownloadToolTip));
 
-        public string MediaModeToolTip => GetString(nameof(MediaModeToolTip));
+    public string MediaModeToolTip => GetString(nameof(MediaModeToolTip));
 
-        public string Mp4Label => GetString(nameof(Mp4Label));
+    public string Mp4Label => GetString(nameof(Mp4Label));
 
-        public string Mp3Label => GetString(nameof(Mp3Label));
+    public string Mp3Label => GetString(nameof(Mp3Label));
 
-        public string SelectDownloadFolderTitle => GetString(nameof(SelectDownloadFolderTitle));
+    public string SelectDownloadFolderTitle => GetString(nameof(SelectDownloadFolderTitle));
 
-        public string AnalyzingUrlStatus => GetString(nameof(AnalyzingUrlStatus));
+    public string AnalyzingUrlStatus => GetString(nameof(AnalyzingUrlStatus));
 
-        public string ReadyStatus => GetString(nameof(ReadyStatus));
+    public string ReadyStatus => GetString(nameof(ReadyStatus));
 
-        public string NoDataText => GetString(nameof(NoDataText));
+    public string NoDataText => GetString(nameof(NoDataText));
 
-        public string InformationPopupTitle => GetString(nameof(InformationPopupTitle));
+    public string InformationPopupTitle => GetString(nameof(InformationPopupTitle));
 
-        public string WarningPopupTitle => GetString(nameof(WarningPopupTitle));
+    public string WarningPopupTitle => GetString(nameof(WarningPopupTitle));
 
-        public string ErrorPopupTitle => GetString(nameof(ErrorPopupTitle));
+    public string ErrorPopupTitle => GetString(nameof(ErrorPopupTitle));
 
-        public string this[string key] => GetString(key);
+    public string OkButtonText => GetString(nameof(OkButtonText));
 
-        private string GetString(string key)
-        {
-            return resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;
-        }
-    }
+    public string this[string key] => GetString(key);
+
+    private string GetString(string key) =>
+        resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;
 }

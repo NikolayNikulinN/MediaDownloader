@@ -3,60 +3,56 @@ using System.Windows;
 using System.Windows.Input;
 using Wpf.Ui.Controls;
 
-namespace MediaDownloader.Views
+namespace MediaDownloader.Views;
+
+/// <summary>
+/// Hosts the main application page and custom title bar.
+/// </summary>
+public partial class MainPage : FluentWindow
 {
+    private readonly MainPageViewModel viewModel;
+
     /// <summary>
-    /// Interaction logic for MainPage.xaml
+    /// Initializes a new instance of the <see cref="MainPage"/> class.
     /// </summary>
-    public partial class MainPage : FluentWindow
+    /// <param name="viewModel">Main window view model.</param>
+    public MainPage(MainPageViewModel viewModel)
     {
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+        ArgumentNullException.ThrowIfNull(viewModel);
 
-        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                ToggleWindowState();
-                return;
-            }
+        this.viewModel = viewModel;
+        InitializeComponent();
+        DataContext = viewModel;
+    }
 
-            if (e.ButtonState == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
+    private void TitleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2)
         {
             ToggleWindowState();
+            return;
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        if (e.ButtonState == MouseButtonState.Pressed)
         {
-            Close();
-        }
-
-        private void Window_StateChanged(object sender, EventArgs e)
-        {
-            if (DataContext is MainPageViewModel viewModel)
-            {
-                viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
-            }
-        }
-
-        private void ToggleWindowState()
-        {
-            WindowState = WindowState == WindowState.Maximized
-                ? WindowState.Normal
-                : WindowState.Maximized;
+            DragMove();
         }
     }
+
+    private void MinimizeButtonClick(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState.Minimized;
+
+    private void MaximizeRestoreButtonClick(object sender, RoutedEventArgs e) =>
+        ToggleWindowState();
+
+    private void CloseButtonClick(object sender, RoutedEventArgs e) =>
+        Close();
+
+    private void WindowStateChanged(object sender, EventArgs e) =>
+        viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
+
+    private void ToggleWindowState() =>
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal
+            : WindowState.Maximized;
 }

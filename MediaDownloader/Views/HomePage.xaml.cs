@@ -1,15 +1,17 @@
 using System.Windows.Controls;
 
-namespace MediaDownloader.Views
+namespace MediaDownloader.Views;
+
+/// <summary>
+/// Displays URL analysis and download controls.
+/// </summary>
+public partial class HomePage : UserControl
 {
     /// <summary>
-    /// Interaction logic for HomePage.xaml
+    /// Initializes a new instance of the <see cref="HomePage"/> class.
     /// </summary>
-    public partial class HomePage : UserControl
+    public HomePage()
     {
-        public HomePage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

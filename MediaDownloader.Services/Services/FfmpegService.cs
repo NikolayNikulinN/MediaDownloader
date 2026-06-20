@@ -1,10 +1,14 @@
 using MediaDownloader.Logger.Constants;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
+using MediaDownloader.Services.Utils;
 using System.Diagnostics;
 
-namespace MediaDownloader.Services.Concreate;
+namespace MediaDownloader.Services.Services;
 
+/// <summary>
+/// Provides access to bundled FFmpeg and FFprobe tools.
+/// </summary>
 public sealed class FfmpegService : IFfmpegService
 {
     public string FfmpegPath => GetToolPath(ServiceConstants.Tools.FfmpegFileName);
@@ -40,6 +44,9 @@ public sealed class FfmpegService : IFfmpegService
 
         using var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException(string.Format(LogConstants.ToolStartFailed, toolPath));
+
+        using var cancellationRegistration = cancellationToken.Register(
+            () => ProcessUtil.TryKill(process));
 
         var output = await process.StandardOutput.ReadLineAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);

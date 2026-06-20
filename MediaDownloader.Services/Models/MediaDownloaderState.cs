@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace MediaDownloader.Services.Models;
 
+/// <summary>
+/// Represents application state persisted between sessions.
+/// </summary>
 [XmlRoot(ServiceConstants.Xml.RootName)]
 public sealed class MediaDownloaderState
 {
