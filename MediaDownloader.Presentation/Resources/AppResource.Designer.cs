@@ -59,5 +59,185 @@ namespace MediaDownloader.Presentation.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add URL.
+        /// </summary>
+        internal static string AnalyzeUrlButtonText {
+            get {
+                return ResourceManager.GetString("AnalyzeUrlButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Analyzing URL....
+        /// </summary>
+        internal static string AnalyzingUrlStatus {
+            get {
+                return ResourceManager.GetString("AnalyzingUrlStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MediaDownloader.
+        /// </summary>
+        internal static string AppTitle {
+            get {
+                return ResourceManager.GetString("AppTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browse.
+        /// </summary>
+        internal static string BrowseButtonText {
+            get {
+                return ResourceManager.GetString("BrowseButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string CloseToolTip {
+            get {
+                return ResourceManager.GetString("CloseToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download folder.
+        /// </summary>
+        internal static string DownloadFolderToolTip {
+            get {
+                return ResourceManager.GetString("DownloadFolderToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        internal static string DownloadToolTip {
+            get {
+                return ResourceManager.GetString("DownloadToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximize.
+        /// </summary>
+        internal static string MaximizeToolTip {
+            get {
+                return ResourceManager.GetString("MaximizeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP4 / MP3.
+        /// </summary>
+        internal static string MediaModeToolTip {
+            get {
+                return ResourceManager.GetString("MediaModeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimize.
+        /// </summary>
+        internal static string MinimizeToolTip {
+            get {
+                return ResourceManager.GetString("MinimizeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP3.
+        /// </summary>
+        internal static string Mp3Label {
+            get {
+                return ResourceManager.GetString("Mp3Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MP4.
+        /// </summary>
+        internal static string Mp4Label {
+            get {
+                return ResourceManager.GetString("Mp4Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No data.
+        /// </summary>
+        internal static string NoDataText {
+            get {
+                return ResourceManager.GetString("NoDataText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open folder.
+        /// </summary>
+        internal static string OpenFolderToolTip {
+            get {
+                return ResourceManager.GetString("OpenFolderToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready.
+        /// </summary>
+        internal static string ReadyStatus {
+            get {
+                return ResourceManager.GetString("ReadyStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restore.
+        /// </summary>
+        internal static string RestoreToolTip {
+            get {
+                return ResourceManager.GetString("RestoreToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save to.
+        /// </summary>
+        internal static string SaveToLabel {
+            get {
+                return ResourceManager.GetString("SaveToLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select download folder.
+        /// </summary>
+        internal static string SelectDownloadFolderTitle {
+            get {
+                return ResourceManager.GetString("SelectDownloadFolderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste URL.
+        /// </summary>
+        internal static string UrlPlaceholder {
+            get {
+                return ResourceManager.GetString("UrlPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL which contains video.
+        /// </summary>
+        internal static string YouTubeUrlToolTip {
+            get {
+                return ResourceManager.GetString("YouTubeUrlToolTip", resourceCulture);
+            }
+        }
     }
 }

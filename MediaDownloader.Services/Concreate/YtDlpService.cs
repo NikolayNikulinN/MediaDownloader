@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 
-namespace MediaDownloader.Services;
+namespace MediaDownloader.Services.Concreate;
 
 public sealed class YtDlpService : IYtDlpService
 {

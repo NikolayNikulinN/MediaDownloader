@@ -3,7 +3,7 @@ using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using System.Diagnostics;
 
-namespace MediaDownloader.Services;
+namespace MediaDownloader.Services.Concreate;
 
 public sealed class FfmpegService : IFfmpegService
 {

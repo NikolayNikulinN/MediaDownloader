@@ -5,7 +5,7 @@ using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Models;
 using System.Xml.Serialization;
 
-namespace MediaDownloader.Services;
+namespace MediaDownloader.Services.Concreate;
 
 public sealed class XmlWrapper : IXmlWrapper
 {
@@ -26,7 +26,6 @@ public sealed class XmlWrapper : IXmlWrapper
         try
         {
             var directoryPath = Path.GetDirectoryName(filePath);
-
             if (!string.IsNullOrWhiteSpace(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -54,8 +53,7 @@ public sealed class XmlWrapper : IXmlWrapper
         try
         {
             using var stream = File.OpenRead(filePath);
-            return Serializer.Deserialize(stream) as MediaDownloaderState
-                   ?? new MediaDownloaderState();
+            return Serializer.Deserialize(stream) as MediaDownloaderState ?? new MediaDownloaderState();
         }
         catch (Exception exception)
         {

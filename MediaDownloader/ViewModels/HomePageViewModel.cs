@@ -4,9 +4,11 @@ using MediaDownloader.Logger.Abstract;
 using MediaDownloader.Logger.Constants;
 using MediaDownloader.Logger.Enums;
 using MediaDownloader.Presentation.Resources;
+using MediaDownloader.Presentation.Utils;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Models;
 using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -18,7 +20,6 @@ namespace MediaDownloader.ViewModels
     {
         private readonly IYtDlpService ytDlpService;
         private readonly ILoggerWrapper loggerWrapper;
-        private readonly ResourceWrapper resourceWrapper;
         private string outputFolder;
         private string url = string.Empty;
         private string analysisStatus = string.Empty;
@@ -35,12 +36,12 @@ namespace MediaDownloader.ViewModels
 
             this.ytDlpService = ytDlpService;
             this.loggerWrapper = loggerWrapper;
-            this.resourceWrapper = resourceWrapper;
+            this.ResourceWrapper = resourceWrapper;
 
             outputFolder = GetDefaultOutputFolder();
             UrlItems = [];
             UrlItems.CollectionChanged += UrlItems_CollectionChanged;
-            AnalyzeUrlCommand = new AsyncRelayCommand(AnalyzeUrlAsync, CanAnalyzeUrl);
+            AddUrlCommand = new AsyncRelayCommand(AnalyzeUrlAsync, CanAnalyzeUrl);
             BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
             OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         }
@@ -53,7 +54,7 @@ namespace MediaDownloader.ViewModels
                 if (SetProperty(ref url, value))
                 {
                     OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
-                    AnalyzeUrlCommand.NotifyCanExecuteChanged();
+                    AddUrlCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -79,7 +80,7 @@ namespace MediaDownloader.ViewModels
                 {
                     OnPropertyChanged(nameof(IsUrlInputEnabled));
                     OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
-                    AnalyzeUrlCommand.NotifyCanExecuteChanged();
+                    AddUrlCommand.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -93,9 +94,9 @@ namespace MediaDownloader.ViewModels
 
         public ObservableCollection<UrlMediaItem> UrlItems { get; }
 
-        public ResourceWrapper ResourceWrapper => resourceWrapper;
+        public ResourceWrapper ResourceWrapper { get; }
 
-        public IAsyncRelayCommand AnalyzeUrlCommand { get; }
+        public IAsyncRelayCommand AddUrlCommand { get; }
 
         public IRelayCommand BrowseOutputFolderCommand { get; }
 
@@ -146,27 +147,31 @@ namespace MediaDownloader.ViewModels
 
         private async Task AnalyzeUrlAsync()
         {
-            try
-            {
-                IsAnalyzing = true;
-                AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
+            UiPopupUtil.ShowWarning("test");
+            loggerWrapper.Write("test", LogLevel.Error);
 
-                var mediaItem = await ytDlpService.GetMediaInfoAsync(Url);
-                mediaItem.DownloadStatus = ResourceWrapper.ReadyStatus;
-                UrlItems.Add(mediaItem);
+            //try
+            //{
+            //    IsAnalyzing = true;
+            //    AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
 
-                Url = string.Empty;
-                AnalysisStatus = string.Empty;
-            }
-            catch (Exception exception)
-            {
-                AnalysisStatus = exception.Message;
-                loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
-            }
-            finally
-            {
-                IsAnalyzing = false;
-            }
+            //    var mediaItem = await ytDlpService.GetMediaInfoAsync(Url);
+            //    mediaItem.DownloadStatus = ResourceWrapper.ReadyStatus;
+            //    UrlItems.Add(mediaItem);
+
+            //    Url = string.Empty;
+            //    AnalysisStatus = string.Empty;
+            //}
+            //catch (Exception exception)
+            //{
+            //    AnalysisStatus = exception.Message;
+            //    loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
+            //    UiPopupUtil.ShowError(exception.Message);
+            //}
+            //finally
+            //{
+            //    IsAnalyzing = false;
+            //}
         }
     }
 }

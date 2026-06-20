@@ -376,6 +376,7 @@ FodyWeavers.xsd
 # Local agent/tooling state
 .agents/
 .codex/
+AGENTS.md
 
 # Downloaded media tools
 MediaDownloader.Services/Tools/*.exe

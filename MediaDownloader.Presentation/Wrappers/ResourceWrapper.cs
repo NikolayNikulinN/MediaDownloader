@@ -47,6 +47,12 @@ namespace MediaDownloader.Presentation.Resources
 
         public string NoDataText => GetString(nameof(NoDataText));
 
+        public string InformationPopupTitle => GetString(nameof(InformationPopupTitle));
+
+        public string WarningPopupTitle => GetString(nameof(WarningPopupTitle));
+
+        public string ErrorPopupTitle => GetString(nameof(ErrorPopupTitle));
+
         public string this[string key] => GetString(key);
 
         private string GetString(string key)

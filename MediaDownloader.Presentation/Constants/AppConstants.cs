@@ -5,8 +5,11 @@ namespace MediaDownloader.Presentation.Constants
         public AppConstants()
         {
             Images = new();
+            Common = new();
         }
 
         public ImagePaths Images { get; }
+
+        public CommonConstants Common { get; }
     }
 }

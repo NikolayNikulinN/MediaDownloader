@@ -44,7 +44,7 @@
                        Height="42"
                        Appearance="Primary"
                        Cursor="Hand"
-                       Command="{Binding AnalyzeUrlCommand}">
+                       Command="{Binding AddUrlCommand}">
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center">
                     <ui:ProgressRing Width="16"
@@ -63,13 +63,13 @@
                    FontSize="12"
                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4" ShowGridLines="False">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="12" />
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="42" />
             </Grid.ColumnDefinitions>
@@ -103,9 +103,10 @@
                        Cursor="Hand"
                        ToolTip="{Binding ResourceWrapper.OpenFolderToolTip}"
                        Command="{Binding OpenOutputFolderCommand}">
-                <TextBlock FontFamily="Segoe MDL2 Assets"
-                           Text="&#xE8B7;"
-                           FontSize="17" />
+                <Image Source="/MediaDownloader.Presentation;component/Images/folder.png"
+                       Width="28"
+                       Height="24"
+                       Stretch="Uniform" />
             </ui:Button>
         </Grid>
 
