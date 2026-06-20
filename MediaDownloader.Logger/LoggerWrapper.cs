@@ -9,7 +9,7 @@ public sealed class LoggerWrapper : ILoggerWrapper
     private readonly ILogger logger;
 
     public LoggerWrapper()
-        : this(Log.Logger)
+        : this(FileLoggerConfigurator.GetLogger())
     {
     }
 

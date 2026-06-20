@@ -1,5 +1,6 @@
 using MediaDownloader.Logger;
 using MediaDownloader.Logger.Abstract;
+using MediaDownloader.Logger.Constants;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
 using MediaDownloader.Services.Abstract;
@@ -30,12 +31,19 @@ namespace MediaDownloader
             ConfigureServices(services);
 
             serviceProvider = services.BuildServiceProvider();
+            serviceProvider
+                .GetRequiredService<ILoggerWrapper>()
+                .Write(LogConstants.ApplicationStarted);
             serviceProvider.GetRequiredService<MainPage>().Show();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            serviceProvider?
+                .GetService<ILoggerWrapper>()?
+                .Write(LogConstants.ApplicationStopped);
             serviceProvider?.Dispose();
+            FileLoggerConfigurator.CloseAndFlush();
             base.OnExit(e);
         }
 

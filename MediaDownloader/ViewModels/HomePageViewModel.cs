@@ -147,31 +147,30 @@ namespace MediaDownloader.ViewModels
 
         private async Task AnalyzeUrlAsync()
         {
-            UiPopupUtil.ShowWarning("test");
-            loggerWrapper.Write("test", LogLevel.Error);
+            try
+            {
 
-            //try
-            //{
-            //    IsAnalyzing = true;
-            //    AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
 
-            //    var mediaItem = await ytDlpService.GetMediaInfoAsync(Url);
-            //    mediaItem.DownloadStatus = ResourceWrapper.ReadyStatus;
-            //    UrlItems.Add(mediaItem);
+                IsAnalyzing = true;
+                AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
 
-            //    Url = string.Empty;
-            //    AnalysisStatus = string.Empty;
-            //}
-            //catch (Exception exception)
-            //{
-            //    AnalysisStatus = exception.Message;
-            //    loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
-            //    UiPopupUtil.ShowError(exception.Message);
-            //}
-            //finally
-            //{
-            //    IsAnalyzing = false;
-            //}
+                var mediaItem = await ytDlpService.GetMediaInfoAsync(Url);
+                mediaItem.DownloadStatus = ResourceWrapper.ReadyStatus;
+                UrlItems.Add(mediaItem);
+
+                Url = string.Empty;
+                AnalysisStatus = string.Empty;
+            }
+            catch (Exception exception)
+            {
+                AnalysisStatus = exception.Message;
+                loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
+                UiPopupUtil.ShowError(exception.Message);
+            }
+            finally
+            {
+                IsAnalyzing = false;
+            }
         }
     }
 }
