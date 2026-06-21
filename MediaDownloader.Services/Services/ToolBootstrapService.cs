@@ -272,8 +272,8 @@ public sealed class ToolBootstrapService : IToolBootstrapService
 
     private static ExtractedToolFile ExtractToolToTemporaryFile(ZipArchive archive, string fileName)
     {
-        var entry = archive.Entries.FirstOrDefault(candidate => 
-                                                                candidate.FullName.EndsWith($"/bin/{fileName}", 
+        var entry = archive.Entries.FirstOrDefault(candidate =>
+                                                                candidate.FullName.EndsWith($"/bin/{fileName}",
                                                                 StringComparison.OrdinalIgnoreCase))
                                                              ?? throw new InvalidDataException(string.Format(
                                                                                                               CultureInfo.InvariantCulture,

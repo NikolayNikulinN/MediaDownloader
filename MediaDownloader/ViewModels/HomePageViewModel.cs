@@ -7,6 +7,7 @@ using MediaDownloader.Presentation.Abstract;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
 using MediaDownloader.Services.Abstract;
+using MediaDownloader.Services.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
@@ -22,7 +23,9 @@ public partial class HomePageViewModel : ObservableObject
     private readonly ILoggerWrapper loggerWrapper;
     private readonly IShellUtil shellService;
     private readonly IUiPopupUtil uiPopupService;
+    private readonly IXmlService xmlService;
     private readonly IYtDlpService ytDlpService;
+    private readonly ApplicationSettings settings;
 
     [ObservableProperty]
     private string analysisStatus = string.Empty;
@@ -40,13 +43,14 @@ public partial class HomePageViewModel : ObservableObject
     /// Initializes a new instance of the <see cref="HomePageViewModel"/> class.
     /// </summary>
     public HomePageViewModel(
-        IYtDlpService ytDlpService,
-        ILoggerWrapper loggerWrapper,
-        ResourceWrapper resourceWrapper,
-        AppConstants appConstants,
-        IFolderDialogUtil folderDialogService,
-        IShellUtil shellService,
-        IUiPopupUtil uiPopupService)
+                             IYtDlpService ytDlpService,
+                             ILoggerWrapper loggerWrapper,
+                             ResourceWrapper resourceWrapper,
+                             AppConstants appConstants,
+                             IFolderDialogUtil folderDialogService,
+                             IShellUtil shellService,
+                              IUiPopupUtil uiPopupService,
+                            IXmlService xmlService)
     {
         ArgumentNullException.ThrowIfNull(ytDlpService);
         ArgumentNullException.ThrowIfNull(loggerWrapper);
@@ -55,16 +59,19 @@ public partial class HomePageViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(folderDialogService);
         ArgumentNullException.ThrowIfNull(shellService);
         ArgumentNullException.ThrowIfNull(uiPopupService);
+        ArgumentNullException.ThrowIfNull(xmlService);
 
         this.ytDlpService = ytDlpService;
         this.loggerWrapper = loggerWrapper;
         this.folderDialogService = folderDialogService;
         this.shellService = shellService;
         this.uiPopupService = uiPopupService;
+        this.xmlService = xmlService;
         ResourceWrapper = resourceWrapper;
         AppConstants = appConstants;
 
-        outputFolder = GetDefaultOutputFolder();
+        settings = xmlService.LoadSettings();
+        outputFolder = settings.SaveFolderPath;
         UrlItems = [];
         UrlItems.CollectionChanged += UrlItemsCollectionChanged;
         AddUrlCommand = new AsyncRelayCommand(AddUrlAsync, CanAddUrl);
@@ -120,6 +127,8 @@ public partial class HomePageViewModel : ObservableObject
         if (!string.IsNullOrWhiteSpace(selectedFolder))
         {
             OutputFolder = selectedFolder;
+            settings.SaveFolderPath = selectedFolder;
+            xmlService.SaveSettings(settings);
         }
     }
 

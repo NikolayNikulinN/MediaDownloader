@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
         };
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"{ServiceConstants.Tools.HttpUserAgentProductName}/{ServiceConstants.Tools.HttpUserAgentProductVersion}");
         services.AddSingleton(httpClient);
-        services.AddSingleton<IXmlWrapper, XmlWrapper>();
+        services.AddSingleton<IXmlService, XmlService>();
         services.AddSingleton<IYtDlpService, YtDlpService>();
         services.AddSingleton<IFfmpegService, FfmpegService>();
         services.AddSingleton<IToolBootstrapService, ToolBootstrapService>();

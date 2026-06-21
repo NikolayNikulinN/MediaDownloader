@@ -126,7 +126,7 @@ public sealed class UiPopupUtil : IUiPopupUtil
                                           string title,
                                           string initialStatus,
                                           string statusFormat)
-    {                                     
+    {
         ArgumentNullException.ThrowIfNull(operation);
 
         var progressWindow = new ToolDownloadProgressWindow(
