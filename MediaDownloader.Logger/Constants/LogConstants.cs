@@ -34,4 +34,10 @@ public static class LogConstants
     public const string YtDlpAnalyzeFailed = "Failed to analyze URL '{0}'. {1}";
 
     public const string AnalyzeUrlFailed = "Failed to analyze URL. {0}";
+
+    public const string ToolBootstrapFailed = "Required tool verification or download failed. {0}";
+
+    public const string ToolUpdateCheckFailed = "Tool update check failed. {0}";
+
+    public const string ToolUpdateFailed = "Tool update failed. {0}";
 }

@@ -58,8 +58,57 @@ public sealed class ResourceWrapper
 
     public string OkButtonText => GetString(nameof(OkButtonText));
 
+    public string MissingToolsTitle => GetString(nameof(MissingToolsTitle));
+
+    public string MissingToolsMessage => GetString(nameof(MissingToolsMessage));
+
+    public string DownloadButtonText => GetString(nameof(DownloadButtonText));
+
+    public string CancelButtonText => GetString(nameof(CancelButtonText));
+
+    public string ListItemPrefix => GetString(nameof(ListItemPrefix));
+
+    public string ToolDownloadFailedMessage => GetString(nameof(ToolDownloadFailedMessage));
+
+    public string ToolDownloadSucceededMessage => GetString(nameof(ToolDownloadSucceededMessage));
+
+    public string DownloadingToolsTitle => GetString(nameof(DownloadingToolsTitle));
+
+    public string PreparingDownloadStatus => GetString(nameof(PreparingDownloadStatus));
+
+    public string DownloadingToolStatus => GetString(nameof(DownloadingToolStatus));
+
+    public string CheckLibrariesToolTip => GetString(nameof(CheckLibrariesToolTip));
+
+    public string OpenToolsFolderToolTip => GetString(nameof(OpenToolsFolderToolTip));
+
+    public string CheckingUpdatesStatus => GetString(nameof(CheckingUpdatesStatus));
+
+    public string LibrariesUpToDateStatus => GetString(nameof(LibrariesUpToDateStatus));
+
+    public string UpdatesAvailableStatus => GetString(nameof(UpdatesAvailableStatus));
+
+    public string LibrariesUpdatedStatus => GetString(nameof(LibrariesUpdatedStatus));
+
+    public string ToolUpdatesAvailableTitle => GetString(nameof(ToolUpdatesAvailableTitle));
+
+    public string ToolUpdatesAvailableMessage => GetString(nameof(ToolUpdatesAvailableMessage));
+
+    public string ToolUpdateDescriptionFormat => GetString(nameof(ToolUpdateDescriptionFormat));
+
+    public string UpdateButtonText => GetString(nameof(UpdateButtonText));
+
+    public string ToolUpdateSucceededMessage => GetString(nameof(ToolUpdateSucceededMessage));
+
+    public string ToolUpdateFailedMessage => GetString(nameof(ToolUpdateFailedMessage));
+
+    public string UpdatingLibrariesTitle => GetString(nameof(UpdatingLibrariesTitle));
+
+    public string PreparingUpdateStatus => GetString(nameof(PreparingUpdateStatus));
+
+    public string UpdatingLibraryStatus => GetString(nameof(UpdatingLibraryStatus));
+
     public string this[string key] => GetString(key);
 
-    private string GetString(string key) =>
-        resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;
+    private string GetString(string key) => resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;
 }

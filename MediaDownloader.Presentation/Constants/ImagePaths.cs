@@ -9,6 +9,8 @@ public sealed class ImagePaths
 
     public string ClosePath => "/MediaDownloader.Presentation;component/Images/close.png";
 
+    public string CheckLibsVersionPath => "/MediaDownloader.Presentation;component/Images/checkLibsVersion.png";
+
     public string ErrorPath => "/MediaDownloader.Presentation;component/Images/error.png";
 
     public string FolderPath => "/MediaDownloader.Presentation;component/Images/folder.png";

@@ -54,6 +54,5 @@ public sealed class FfmpegService : IFfmpegService
         return output ?? string.Empty;
     }
 
-    private static string GetToolPath(string fileName) =>
-        Path.Combine(AppContext.BaseDirectory, ServiceConstants.Tools.FolderName, fileName);
+    private static string GetToolPath(string fileName) => ToolPathResolver.Resolve(fileName);
 }

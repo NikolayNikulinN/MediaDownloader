@@ -5,10 +5,12 @@ using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
 using MediaDownloader.Presentation.Services;
 using MediaDownloader.Services.Abstract;
+using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Services;
 using MediaDownloader.ViewModels;
 using MediaDownloader.Views;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace MediaDownloader.Extensions;
 
@@ -29,9 +31,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<AppConstants>();
         services.AddSingleton<ResourceWrapper>();
         services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
+        var httpClient = new HttpClient
+        {
+            Timeout = TimeSpan.FromMinutes(ServiceConstants.Tools.DownloadTimeoutMinutes)
+        };
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"{ServiceConstants.Tools.HttpUserAgentProductName}/{ServiceConstants.Tools.HttpUserAgentProductVersion}");
+        services.AddSingleton(httpClient);
         services.AddSingleton<IXmlWrapper, XmlWrapper>();
         services.AddSingleton<IYtDlpService, YtDlpService>();
         services.AddSingleton<IFfmpegService, FfmpegService>();
+        services.AddSingleton<IToolBootstrapService, ToolBootstrapService>();
+        services.AddSingleton<IToolUpdateService, ToolUpdateService>();
         services.AddSingleton<IFolderDialogUtil, FolderDialogUtil>();
         services.AddSingleton<IShellUtil, ShellUtil>();
         services.AddSingleton<IUiPopupUtil, UiPopupUtil>();

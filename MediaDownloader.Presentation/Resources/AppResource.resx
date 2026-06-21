@@ -189,4 +189,87 @@
   <data name="OkButtonText" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="MissingToolsTitle" xml:space="preserve">
+    <value>Required tools are missing</value>
+  </data>
+  <data name="MissingToolsMessage" xml:space="preserve">
+    <value>The following required tools are missing:
+
+{0}
+
+Download them now?</value>
+  </data>
+  <data name="DownloadButtonText" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="CancelButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ListItemPrefix" xml:space="preserve">
+    <value>• </value>
+  </data>
+  <data name="ToolDownloadFailedMessage" xml:space="preserve">
+    <value>Required tools could not be downloaded. {0}</value>
+  </data>
+  <data name="ToolDownloadSucceededMessage" xml:space="preserve">
+    <value>All missing files have been successfully downloaded</value>
+  </data>
+  <data name="DownloadingToolsTitle" xml:space="preserve">
+    <value>Downloading required tools</value>
+  </data>
+  <data name="PreparingDownloadStatus" xml:space="preserve">
+    <value>Preparing download...</value>
+  </data>
+  <data name="DownloadingToolStatus" xml:space="preserve">
+    <value>Downloading {0}...</value>
+  </data>
+  <data name="CheckLibrariesToolTip" xml:space="preserve">
+    <value>Check for library updates</value>
+  </data>
+  <data name="OpenToolsFolderToolTip" xml:space="preserve">
+    <value>Open Tools folder</value>
+  </data>
+  <data name="CheckingUpdatesStatus" xml:space="preserve">
+    <value>Checking for updates...</value>
+  </data>
+  <data name="LibrariesUpToDateStatus" xml:space="preserve">
+    <value>All libraries are up to date</value>
+  </data>
+  <data name="UpdatesAvailableStatus" xml:space="preserve">
+    <value>Updates are available</value>
+  </data>
+  <data name="LibrariesUpdatedStatus" xml:space="preserve">
+    <value>All libraries have been updated</value>
+  </data>
+  <data name="ToolUpdatesAvailableTitle" xml:space="preserve">
+    <value>Library updates are available</value>
+  </data>
+  <data name="ToolUpdatesAvailableMessage" xml:space="preserve">
+    <value>New versions are available:
+
+{0}
+
+Download and replace the existing files in the Tools folder?</value>
+  </data>
+  <data name="ToolUpdateDescriptionFormat" xml:space="preserve">
+    <value>{0}: {1} → {2}</value>
+  </data>
+  <data name="UpdateButtonText" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="ToolUpdateSucceededMessage" xml:space="preserve">
+    <value>All libraries have been successfully updated</value>
+  </data>
+  <data name="ToolUpdateFailedMessage" xml:space="preserve">
+    <value>Libraries could not be updated. {0}</value>
+  </data>
+  <data name="UpdatingLibrariesTitle" xml:space="preserve">
+    <value>Updating libraries</value>
+  </data>
+  <data name="PreparingUpdateStatus" xml:space="preserve">
+    <value>Preparing update...</value>
+  </data>
+  <data name="UpdatingLibraryStatus" xml:space="preserve">
+    <value>Updating {0}...</value>
+  </data>
 </root>

@@ -12,7 +12,8 @@ internal partial class UiPopupWindow : FluentWindow
         string buttonText,
         string iconPath,
         string closeToolTip,
-        string closeIconPath)
+        string closeIconPath,
+        string? secondaryButtonText = null)
     {
         PopupTitle = title;
         Message = message;
@@ -20,6 +21,10 @@ internal partial class UiPopupWindow : FluentWindow
         IconPath = iconPath;
         CloseToolTip = closeToolTip;
         CloseIconPath = closeIconPath;
+        SecondaryButtonText = secondaryButtonText ?? string.Empty;
+        SecondaryButtonVisibility = string.IsNullOrWhiteSpace(secondaryButtonText)
+                                                                                    ? Visibility.Collapsed
+                                                                                    : Visibility.Visible;
 
         InitializeComponent();
         DataContext = this;
@@ -37,6 +42,10 @@ internal partial class UiPopupWindow : FluentWindow
 
     public string CloseIconPath { get; }
 
+    public string SecondaryButtonText { get; }
+
+    public Visibility SecondaryButtonVisibility { get; }
+
     private void TitleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ButtonState == MouseButtonState.Pressed)
@@ -46,19 +55,20 @@ internal partial class UiPopupWindow : FluentWindow
     }
 
     private void OkButtonClick(object sender, RoutedEventArgs e) =>
-        ClosePopup();
+        ClosePopup(true);
 
     private void CloseButtonClick(object sender, RoutedEventArgs e) =>
-        ClosePopup();
+        ClosePopup(false);
+
+    private void CancelButtonClick(object sender, RoutedEventArgs e) => ClosePopup(false);
 
     private void WindowPreviewKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
         {
-            ClosePopup();
+            ClosePopup(false);
         }
     }
 
-    private void ClosePopup() =>
-        DialogResult = true;
+    private void ClosePopup(bool result) => DialogResult = result;
 }

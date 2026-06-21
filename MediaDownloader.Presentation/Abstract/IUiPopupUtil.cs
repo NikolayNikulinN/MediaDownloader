@@ -22,4 +22,30 @@ public interface IUiPopupUtil
     /// </summary>
     /// <param name="message">Message text.</param>
     void ShowError(string message);
+
+    /// <summary>
+    /// Asks the user to confirm downloading the specified missing tools.
+    /// </summary>
+    /// <param name="missingTools">Missing tool file names.</param>
+    /// <returns><see langword="true"/> only when the user explicitly confirms.</returns>
+    bool ConfirmToolDownload(IReadOnlyCollection<string> missingTools);
+
+    /// <summary>
+    /// Asks the user to confirm updating the specified tools.
+    /// </summary>
+    /// <param name="updates">Formatted update descriptions.</param>
+    /// <returns><see langword="true"/> only when the user explicitly confirms.</returns>
+    bool ConfirmToolUpdate(IReadOnlyCollection<string> updates);
+
+    /// <summary>
+    /// Displays a progress dialog while required tools are downloaded.
+    /// </summary>
+    /// <param name="downloadOperation">Download operation that reports the current file name.</param>
+    Task ShowToolDownloadProgressAsync(Func<IProgress<string>, Task> downloadOperation);
+
+    /// <summary>
+    /// Displays a progress dialog while installed tools are updated.
+    /// </summary>
+    /// <param name="updateOperation">Update operation that reports the current file name.</param>
+    Task ShowToolUpdateProgressAsync(Func<IProgress<string>, Task> updateOperation);
 }

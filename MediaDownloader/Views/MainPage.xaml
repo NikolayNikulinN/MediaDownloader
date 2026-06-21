@@ -24,6 +24,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="48" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="44" />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0"
@@ -87,9 +88,61 @@
                 </StackPanel>
             </Grid>
 
-            <ContentControl Grid.Row="1"
-                            Margin="24,16,24,24"
-                            Content="{Binding ActivePage}" />
+            <Grid Grid.Row="1">
+                <ContentControl Margin="24,16,24,16"
+                                Content="{Binding ActivePage}" />
+            </Grid>
+
+            <Border Grid.Row="2"
+                    Padding="12,0"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,0,0"
+                    Background="{DynamicResource LayerFillColorDefaultBrush}">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <TextBlock Margin="0,0,12,0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Text="{Binding LibraryUpdateStatus}" />
+
+                    <ui:Button Width="36"
+                               Height="32"
+                               Margin="0,0,8,0"
+                               Padding="0"
+                               Appearance="Secondary"
+                               Cursor="Hand"
+                               Command="{Binding CheckLibraryUpdatesCommand}"
+                               ToolTip="{Binding ResourceWrapper.CheckLibrariesToolTip}">
+                        <Image Width="50"
+                               Height="50"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Source="{Binding AppConstants.Images.CheckLibsVersionPath}"
+                               Stretch="Uniform" />
+                    </ui:Button>
+
+                    <ui:Button Width="36"
+                               Height="32"
+                               Padding="0"
+                               Appearance="Secondary"
+                               Cursor="Hand"
+                               Command="{Binding OpenToolsFolderCommand}"
+                               ToolTip="{Binding ResourceWrapper.OpenToolsFolderToolTip}">
+                        <Image Width="24"
+                               Height="22"
+                               Source="{Binding AppConstants.Images.FolderPath}"
+                               Stretch="Uniform" />
+                    </ui:Button>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.RowSpan="3"
+                    Background="#01000000"
+                    Cursor="Wait"
+                    Panel.ZIndex="100"
+                    Visibility="{Binding IsCheckingUpdates, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
     </Border>
 </ui:FluentWindow>

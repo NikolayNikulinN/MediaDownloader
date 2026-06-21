@@ -19,6 +19,47 @@ public static class ServiceConstants
         public const string FfprobeFileName = "ffprobe.exe";
 
         public const string VersionArgument = "-version";
+
+        public const string YtDlpVersionArgument = "--version";
+
+        public const string YtDlpDisplayName = "yt-dlp";
+
+        public const string FfmpegDisplayName = "FFmpeg";
+
+        public const string GitHubTagNameProperty = "tag_name";
+
+        public const int FfmpegVersionTokenIndex = 2;
+
+        public const int FfmpegVersionTokenCount = 3;
+
+        public const string TemporaryFileExtension = ".download";
+
+        public const string ZipFileExtension = ".zip";
+
+        public const string YtDlpDownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+
+        public const string YtDlpLatestReleaseApiUrl = "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest";
+
+        public const string FfmpegDownloadUrl = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+
+        public const string FfmpegLatestVersionUrl = "https://www.gyan.dev/ffmpeg/builds/release-version";
+
+        public const string DownloadRequiresConfirmation = "Tool downloads require explicit user confirmation.";
+
+        public const string ArchiveEntryNotFound = "The downloaded FFmpeg archive does not contain '{0}'.";
+
+        public const int DownloadTimeoutMinutes = 15;
+
+        public const string HttpUserAgentProductName = "MediaDownloader";
+
+        public const string HttpUserAgentProductVersion = "1.0";
+
+        public static IReadOnlyList<string> RequiredFileNames { get; } =
+        [
+            YtDlpFileName,
+            FfmpegFileName,
+            FfprobeFileName
+        ];
     }
 
     /// <summary>
