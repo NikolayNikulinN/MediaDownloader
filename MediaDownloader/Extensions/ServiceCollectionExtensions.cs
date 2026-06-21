@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ILoggerWrapper, LoggerWrapper>();
         var httpClient = new HttpClient
         {
-            Timeout = TimeSpan.FromMinutes(ServiceConstants.Tools.DownloadTimeoutMinutes)
+            Timeout = Timeout.InfiniteTimeSpan
         };
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($"{ServiceConstants.Tools.HttpUserAgentProductName}/{ServiceConstants.Tools.HttpUserAgentProductVersion}");
         services.AddSingleton(httpClient);

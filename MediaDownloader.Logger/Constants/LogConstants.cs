@@ -40,4 +40,6 @@ public static class LogConstants
     public const string ToolUpdateCheckFailed = "Tool update check failed. {0}";
 
     public const string ToolUpdateFailed = "Tool update failed. {0}";
+
+    public const string ToolDownloadRetry = "Tool download retry {0} will start in {1:F1} seconds. {2}";
 }

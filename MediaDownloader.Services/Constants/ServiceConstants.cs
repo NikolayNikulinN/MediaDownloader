@@ -34,6 +34,8 @@ public static class ServiceConstants
 
         public const string TemporaryFileExtension = ".download";
 
+        public const string BackupFileExtension = ".backup";
+
         public const string ZipFileExtension = ".zip";
 
         public const string YtDlpDownloadUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
@@ -48,7 +50,25 @@ public static class ServiceConstants
 
         public const string ArchiveEntryNotFound = "The downloaded FFmpeg archive does not contain '{0}'.";
 
-        public const int DownloadTimeoutMinutes = 15;
+        public const string DownloadedFileIsEmpty = "The downloaded file is empty.";
+
+        public const string DownloadedFileSizeMismatch = "The downloaded file is incomplete. Expected {0} bytes, received {1} bytes.";
+
+        public const string DownloadedExecutableIsInvalid = "The downloaded executable is invalid.";
+
+        public const int DownloadMaxRetryAttempts = 4;
+
+        public const int DownloadRetryDelaySeconds = 2;
+
+        public const int DownloadAttemptTimeoutMinutes = 15;
+
+        public const int MinimumDownloadedFileSizeBytes = 1;
+
+        public const int PortableExecutableHeaderSize = 2;
+
+        public const byte PortableExecutableFirstByte = 0x4D;
+
+        public const byte PortableExecutableSecondByte = 0x5A;
 
         public const string HttpUserAgentProductName = "MediaDownloader";
 

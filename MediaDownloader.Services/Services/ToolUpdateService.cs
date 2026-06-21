@@ -111,7 +111,7 @@ public sealed class ToolUpdateService : IToolUpdateService
 
     private static string ParseFfmpegVersion(string output)
     {
-        var parts = output.Split( ' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var parts = output.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return parts.Length >= ServiceConstants.Tools.FfmpegVersionTokenCount ? parts[ServiceConstants.Tools.FfmpegVersionTokenIndex] : output.Trim();
     }
 
