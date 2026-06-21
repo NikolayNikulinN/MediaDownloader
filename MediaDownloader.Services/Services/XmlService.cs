@@ -31,7 +31,7 @@ public sealed class XmlService : IXmlService
         var configurationDirectoryPath = Path.Combine(AppContext.BaseDirectory, ServiceConstants.Xml.ConfigurationFolderName);
         settingsFilePath = Path.Combine(configurationDirectoryPath,
         ServiceConstants.Xml.SettingsFileName);
-        dataFilePath = Path.Combine(configurationDirectoryPath,ServiceConstants.Xml.DataFileName);
+        dataFilePath = Path.Combine(configurationDirectoryPath, ServiceConstants.Xml.DataFileName);
     }
 
     /// <inheritdoc />

@@ -110,6 +110,28 @@ public sealed class ResourceWrapper
 
     public string DownloadBestQualityText => GetString(nameof(DownloadBestQualityText));
 
+    public string StopDownloadToolTip => GetString(nameof(StopDownloadToolTip));
+
+    public string DownloadingStatusFormat => GetString(nameof(DownloadingStatusFormat));
+
+    public string ProcessingDownloadStatus => GetString(nameof(ProcessingDownloadStatus));
+
+    public string StoppingDownloadStatus => GetString(nameof(StoppingDownloadStatus));
+
+    public string DownloadCompletedStatus => GetString(nameof(DownloadCompletedStatus));
+
+    public string DownloadCancelledStatus => GetString(nameof(DownloadCancelledStatus));
+
+    public string DownloadFailedStatus => GetString(nameof(DownloadFailedStatus));
+
+    public string StopDownloadConfirmationTitle => GetString(nameof(StopDownloadConfirmationTitle));
+
+    public string StopDownloadConfirmationMessage => GetString(nameof(StopDownloadConfirmationMessage));
+
+    public string YesButtonText => GetString(nameof(YesButtonText));
+
+    public string NoButtonText => GetString(nameof(NoButtonText));
+
     public string this[string key] => GetString(key);
 
     private string GetString(string key) => resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;

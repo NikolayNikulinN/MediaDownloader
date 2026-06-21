@@ -275,4 +275,37 @@ Download and replace the existing files in the Tools folder?</value>
   <data name="DownloadBestQualityText" xml:space="preserve">
     <value>Download in best quality</value>
   </data>
+  <data name="StopDownloadToolTip" xml:space="preserve">
+    <value>Stop download</value>
+  </data>
+  <data name="DownloadingStatusFormat" xml:space="preserve">
+    <value>Downloading... {0}%</value>
+  </data>
+  <data name="ProcessingDownloadStatus" xml:space="preserve">
+    <value>Processing...</value>
+  </data>
+  <data name="StoppingDownloadStatus" xml:space="preserve">
+    <value>Stopping...</value>
+  </data>
+  <data name="DownloadCompletedStatus" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="DownloadCancelledStatus" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="DownloadFailedStatus" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="StopDownloadConfirmationTitle" xml:space="preserve">
+    <value>Stop download</value>
+  </data>
+  <data name="StopDownloadConfirmationMessage" xml:space="preserve">
+    <value>Do you really want to stop the download? The incomplete file will be deleted.</value>
+  </data>
+  <data name="YesButtonText" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="NoButtonText" xml:space="preserve">
+    <value>No</value>
+  </data>
 </root>

@@ -28,4 +28,6 @@ public sealed class UrlMediaItem
     public int DownloadProgress { get; set; }
 
     public string DownloadStatus { get; set; } = ServiceConstants.Media.DownloadStatusReady;
+
+    public string DownloadDate { get; set; } = string.Empty;
 }

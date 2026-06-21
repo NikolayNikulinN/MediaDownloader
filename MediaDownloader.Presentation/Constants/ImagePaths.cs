@@ -17,11 +17,15 @@ public sealed class ImagePaths
 
     public string InformationPath => "/MediaDownloader.Presentation;component/Images/info.png";
 
+    public string DownloadPath => "/MediaDownloader.Presentation;component/Images/download.png";
+
     public string MaximizePath => "/MediaDownloader.Presentation;component/Images/maximize.png";
 
     public string MinimizePath => "/MediaDownloader.Presentation;component/Images/minimize.png";
 
     public string RestorePath => "/MediaDownloader.Presentation;component/Images/restore.png";
+
+    public string StopDownloadPath => "/MediaDownloader.Presentation;component/Images/stopDownload.png";
 
     public string WarningPath => "/MediaDownloader.Presentation;component/Images/warning.png";
 }

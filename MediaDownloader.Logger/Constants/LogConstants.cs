@@ -42,4 +42,6 @@ public static class LogConstants
     public const string ToolUpdateFailed = "Tool update failed. {0}";
 
     public const string ToolDownloadRetry = "Tool download retry {0} will start in {1:F1} seconds. {2}";
+
+    public const string MediaDownloadFailed = "Media download failed for URL '{0}'. {1}";
 }

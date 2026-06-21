@@ -38,6 +38,12 @@ public interface IUiPopupUtil
     bool ConfirmToolUpdate(IReadOnlyCollection<string> updates);
 
     /// <summary>
+    /// Asks the user to confirm stopping an active media download.
+    /// </summary>
+    /// <returns><see langword="true"/> only when the user explicitly confirms.</returns>
+    bool ConfirmStopDownload();
+
+    /// <summary>
     /// Displays a progress dialog while required tools are downloaded.
     /// </summary>
     /// <param name="downloadOperation">Download operation that reports the current file name.</param>

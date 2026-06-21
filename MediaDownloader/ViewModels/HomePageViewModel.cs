@@ -7,9 +7,11 @@ using MediaDownloader.Presentation.Abstract;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Resources;
 using MediaDownloader.Services.Abstract;
+using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 
 namespace MediaDownloader.ViewModels;
@@ -21,11 +23,14 @@ public partial class HomePageViewModel : ObservableObject
 {
     private readonly IFolderDialogUtil folderDialogService;
     private readonly ILoggerWrapper loggerWrapper;
+    private readonly IMediaDownloadService mediaDownloadService;
     private readonly IShellUtil shellService;
     private readonly IUiPopupUtil uiPopupService;
     private readonly IXmlService xmlService;
     private readonly IYtDlpService ytDlpService;
     private readonly ApplicationSettings settings;
+    private readonly Dictionary<UrlMediaItemViewModel, CancellationTokenSource>
+        downloadCancellationSources = [];
 
     [ObservableProperty]
     private string analysisStatus = string.Empty;
@@ -49,8 +54,9 @@ public partial class HomePageViewModel : ObservableObject
                              AppConstants appConstants,
                              IFolderDialogUtil folderDialogService,
                              IShellUtil shellService,
-                              IUiPopupUtil uiPopupService,
-                            IXmlService xmlService)
+                             IUiPopupUtil uiPopupService,
+                             IXmlService xmlService,
+                             IMediaDownloadService mediaDownloadService)
     {
         ArgumentNullException.ThrowIfNull(ytDlpService);
         ArgumentNullException.ThrowIfNull(loggerWrapper);
@@ -60,6 +66,7 @@ public partial class HomePageViewModel : ObservableObject
         ArgumentNullException.ThrowIfNull(shellService);
         ArgumentNullException.ThrowIfNull(uiPopupService);
         ArgumentNullException.ThrowIfNull(xmlService);
+        ArgumentNullException.ThrowIfNull(mediaDownloadService);
 
         this.ytDlpService = ytDlpService;
         this.loggerWrapper = loggerWrapper;
@@ -67,6 +74,7 @@ public partial class HomePageViewModel : ObservableObject
         this.shellService = shellService;
         this.uiPopupService = uiPopupService;
         this.xmlService = xmlService;
+        this.mediaDownloadService = mediaDownloadService;
         ResourceWrapper = resourceWrapper;
         AppConstants = appConstants;
 
@@ -78,6 +86,7 @@ public partial class HomePageViewModel : ObservableObject
         AddUrlCommand = new AsyncRelayCommand(AddUrlAsync, CanAddUrl);
         BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
+        ToggleDownloadCommand = new RelayCommand<UrlMediaItemViewModel>(ToggleDownload);
     }
 
     public bool IsUrlInputEnabled => !IsAnalyzing;
@@ -98,6 +107,8 @@ public partial class HomePageViewModel : ObservableObject
     public IRelayCommand BrowseOutputFolderCommand { get; }
 
     public IRelayCommand OpenOutputFolderCommand { get; }
+
+    public IRelayCommand<UrlMediaItemViewModel> ToggleDownloadCommand { get; }
 
     partial void OnUrlChanged(string value)
     {
@@ -178,12 +189,120 @@ public partial class HomePageViewModel : ObservableObject
     }
 
     private UrlMediaItemViewModel CreateUrlMediaItemViewModel(
-                                                               UrlMediaItem mediaItem) =>
-                                                               new(
-                                                                    mediaItem,
-                                                                    ResourceWrapper.ReadyStatus,
-                                                                    ResourceWrapper.Mp4Label,
-                                                                    ResourceWrapper.Mp3Label);
+        UrlMediaItem mediaItem) =>
+        new(
+            mediaItem,
+            ResourceWrapper.ReadyStatus,
+            ResourceWrapper.Mp4Label,
+            ResourceWrapper.Mp3Label,
+            AppConstants.Images.DownloadPath,
+            AppConstants.Images.StopDownloadPath,
+            ResourceWrapper.DownloadToolTip,
+            ResourceWrapper.StopDownloadToolTip);
+
+    private void ToggleDownload(UrlMediaItemViewModel? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        if (item.IsDownloading)
+        {
+            StopDownload(item);
+            return;
+        }
+
+        _ = DownloadMediaAsync(item);
+    }
+
+    private void StopDownload(UrlMediaItemViewModel item)
+    {
+        if (!uiPopupService.ConfirmStopDownload())
+        {
+            return;
+        }
+
+        item.DownloadStatus = ResourceWrapper.StoppingDownloadStatus;
+        if (downloadCancellationSources.TryGetValue(item, out var cancellationSource))
+        {
+            cancellationSource.Cancel();
+        }
+    }
+
+    private async Task DownloadMediaAsync(UrlMediaItemViewModel item)
+    {
+        using var cancellationSource = new CancellationTokenSource();
+        if (!downloadCancellationSources.TryAdd(item, cancellationSource))
+        {
+            return;
+        }
+
+        try
+        {
+            item.IsDownloading = true;
+            item.DownloadProgress = 0;
+            item.DownloadDate = string.Empty;
+            UpdateDownloadStatus(item, 0);
+            SaveUrlItems();
+
+            var progress = new Progress<MediaDownloadProgress>(value =>
+            {
+                    item.DownloadProgress = value.Percentage;
+                    item.DownloadStatus = value.IsPostProcessing
+                                                                 ? ResourceWrapper.ProcessingDownloadStatus
+                                                                 : string.Format(
+                                                                                 CultureInfo.CurrentUICulture,
+                                                                                 ResourceWrapper.DownloadingStatusFormat,
+                                                                                 value.Percentage);
+            });
+
+            await mediaDownloadService.DownloadAsync( new MediaDownloadRequest {
+                                                                                 Url = item.Url,
+                                                                                 OutputFolder = OutputFolder,
+                                                                                 IsAudioOnly = item.IsAudioSelected,
+                                                                                 VideoQuality = item.SelectedVideoQuality
+                                                                               },
+                                                                               progress,
+                                                                               cancellationSource.Token);
+
+            item.DownloadProgress = 100;
+            item.DownloadStatus = ResourceWrapper.DownloadCompletedStatus;
+            item.DownloadDate = DateTime.Now.ToString(ServiceConstants.DateTimeFormats.DownloadDate, CultureInfo.CurrentCulture);
+        }
+        catch (OperationCanceledException)
+        {
+            item.DownloadProgress = 0;
+            item.DownloadStatus = ResourceWrapper.DownloadCancelledStatus;
+            item.DownloadDate = string.Empty;
+        }
+        catch (Exception exception)
+        {
+            item.DownloadProgress = 0;
+            item.DownloadStatus = ResourceWrapper.DownloadFailedStatus;
+            item.DownloadDate = string.Empty;
+            loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
+                                               LogConstants.MediaDownloadFailed,
+                                               item.Url,
+                                               exception.Message),
+                                 LogLevel.Error);
+            uiPopupService.ShowError(exception.Message);
+        }
+        finally
+        {
+            item.IsDownloading = false;
+            downloadCancellationSources.Remove(item);
+            SaveUrlItems();
+        }
+    }
+
+    private void UpdateDownloadStatus(
+        UrlMediaItemViewModel item,
+        int percentage) => item.DownloadStatus = string.Format(
+                                                                CultureInfo.CurrentUICulture,
+                                                                ResourceWrapper.DownloadingStatusFormat,
+                                                                percentage);
 
     private void SaveUrlItems() => xmlService.SaveData(
                                                         new MediaDownloaderState

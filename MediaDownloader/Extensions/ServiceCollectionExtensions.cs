@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(httpClient);
         services.AddSingleton<IXmlService, XmlService>();
         services.AddSingleton<IYtDlpService, YtDlpService>();
+        services.AddSingleton<IMediaDownloadService, MediaDownloadService>();
         services.AddSingleton<IFfmpegService, FfmpegService>();
         services.AddSingleton<IToolBootstrapService, ToolBootstrapService>();
         services.AddSingleton<IToolUpdateService, ToolUpdateService>();

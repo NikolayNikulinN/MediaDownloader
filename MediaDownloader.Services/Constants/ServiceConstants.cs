@@ -95,6 +95,91 @@ public static class ServiceConstants
     }
 
     /// <summary>
+    /// Provides media download command-line and parsing constants.
+    /// </summary>
+    public static class Download
+    {
+        public const string TemporaryFolderName = ".MediaDownloaderTemp";
+
+        public const string GuidFormat = "N";
+
+        public const string NoColorArgument = "--no-color";
+
+        public const string IgnoreConfigArgument = "--ignore-config";
+
+        public const string NoSimulateArgument = "--no-simulate";
+
+        public const string NoUpdateArgument = "--no-update";
+
+        public const string NewLineArgument = "--newline";
+
+        public const string WindowsFileNamesArgument = "--windows-filenames";
+
+        public const string ProgressArgument = "--progress";
+
+        public const string ProgressTemplateArgument = "--progress-template";
+
+        public const string ProgressTemplate = "download:PROGRESS:%(progress._percent_str)s";
+
+        public const string PostProcessTemplateArgument = "--progress-template";
+
+        public const string PostProcessTemplate = "postprocess:POSTPROCESS:active";
+
+        public const string PrintArgument = "--print";
+
+        public const string AfterMoveFilePathTemplate = "after_move:FILEPATH:%(filepath)s";
+
+        public const string FfmpegLocationArgument = "--ffmpeg-location";
+
+        public const string PathsArgument = "--paths";
+
+        public const string TempPathPrefix = "temp:";
+
+        public const string HomePathPrefix = "home:";
+
+        public const string OutputArgument = "--output";
+
+        public const string OutputTemplate = "%(title)s [%(id)s].%(ext)s";
+
+        public const string ForceOverwriteArgument = "--force-overwrites";
+
+        public const string ExtractAudioArgument = "--extract-audio";
+
+        public const string AudioFormatArgument = "--audio-format";
+
+        public const string AudioQualityArgument = "--audio-quality";
+
+        public const string BestAudioQuality = "0";
+
+        public const string FormatArgument = "--format";
+
+        public const string BestAudioFormatSelector = "bestaudio/best";
+
+        public const string VideoFormatSelector = "bestvideo[height<={0}]+bestaudio/best[height<={0}]/best";
+
+        public const string BestVideoFormatSelector = "bestvideo+bestaudio/best";
+
+        public const string MergeOutputFormatArgument = "--merge-output-format";
+
+        public const string RemuxVideoArgument = "--remux-video";
+
+        public const string Mp3Format = "mp3";
+
+        public const string Mp4Format = "mp4";
+
+        public const string ProgressPrefix = "PROGRESS:";
+
+        public const string PostProcessPrefix = "POSTPROCESS:";
+
+        public const string FilePathPrefix = "FILEPATH:";
+
+        public const string PercentSymbol = "%";
+
+        public const string CompletedFileNotFound =
+            "The completed download file was not found.";
+    }
+
+    /// <summary>
     /// Provides yt-dlp JSON property names.
     /// </summary>
     public static class Json
@@ -148,6 +233,8 @@ public static class ServiceConstants
         public const string YtDlpUploadDate = "yyyyMMdd";
 
         public const string DisplayDate = "dd.MM.yyyy";
+
+        public const string DownloadDate = "dd.MM.yyyy HH:mm";
     }
 
     /// <summary>
