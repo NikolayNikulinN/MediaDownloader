@@ -272,4 +272,7 @@ Download and replace the existing files in the Tools folder?</value>
   <data name="UpdatingLibraryStatus" xml:space="preserve">
     <value>Updating {0}...</value>
   </data>
+  <data name="DownloadBestQualityText" xml:space="preserve">
+    <value>Download in best quality</value>
+  </data>
 </root>

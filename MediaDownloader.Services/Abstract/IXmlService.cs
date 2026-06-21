@@ -19,4 +19,17 @@ public interface IXmlService
     /// </summary>
     /// <param name="settings">Settings to save.</param>
     void SaveSettings(ApplicationSettings settings);
+
+    /// <summary>
+    /// Loads media data from Configuration\data.xml.
+    /// Creates an empty data file when it does not exist.
+    /// </summary>
+    /// <returns>Persisted media data.</returns>
+    MediaDownloaderState LoadData();
+
+    /// <summary>
+    /// Saves media data to Configuration\data.xml.
+    /// </summary>
+    /// <param name="state">Media data to save.</param>
+    void SaveData(MediaDownloaderState state);
 }

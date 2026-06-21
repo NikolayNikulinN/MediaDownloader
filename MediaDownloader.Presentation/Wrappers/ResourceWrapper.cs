@@ -108,6 +108,8 @@ public sealed class ResourceWrapper
 
     public string UpdatingLibraryStatus => GetString(nameof(UpdatingLibraryStatus));
 
+    public string DownloadBestQualityText => GetString(nameof(DownloadBestQualityText));
+
     public string this[string key] => GetString(key);
 
     private string GetString(string key) => resourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? string.Empty;

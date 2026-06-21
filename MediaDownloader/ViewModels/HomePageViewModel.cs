@@ -72,7 +72,8 @@ public partial class HomePageViewModel : ObservableObject
 
         settings = xmlService.LoadSettings();
         outputFolder = settings.SaveFolderPath;
-        UrlItems = [];
+        var savedData = xmlService.LoadData();
+        UrlItems = new(savedData.UrlItems.Select(CreateUrlMediaItemViewModel));
         UrlItems.CollectionChanged += UrlItemsCollectionChanged;
         AddUrlCommand = new AsyncRelayCommand(AddUrlAsync, CanAddUrl);
         BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
@@ -154,12 +155,8 @@ public partial class HomePageViewModel : ObservableObject
             AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
 
             var mediaItem = await ytDlpService.GetMediaInfoAsync(Url, cancellationToken);
-            UrlItems.Add(
-                new UrlMediaItemViewModel(
-                    mediaItem,
-                    ResourceWrapper.ReadyStatus,
-                    ResourceWrapper.Mp4Label,
-                    ResourceWrapper.Mp3Label));
+            UrlItems.Add(CreateUrlMediaItemViewModel(mediaItem));
+            SaveUrlItems();
 
             Url = string.Empty;
             AnalysisStatus = string.Empty;
@@ -179,4 +176,18 @@ public partial class HomePageViewModel : ObservableObject
             IsAnalyzing = false;
         }
     }
+
+    private UrlMediaItemViewModel CreateUrlMediaItemViewModel(
+                                                               UrlMediaItem mediaItem) =>
+                                                               new(
+                                                                    mediaItem,
+                                                                    ResourceWrapper.ReadyStatus,
+                                                                    ResourceWrapper.Mp4Label,
+                                                                    ResourceWrapper.Mp3Label);
+
+    private void SaveUrlItems() => xmlService.SaveData(
+                                                        new MediaDownloaderState
+                                                        {
+                                                            UrlItems = UrlItems.Select(item => item.ToModel()).ToList()
+                                                        });
 }

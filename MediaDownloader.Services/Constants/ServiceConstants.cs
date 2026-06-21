@@ -159,13 +159,15 @@ public static class ServiceConstants
 
         public const string SettingsFileName = "settings.xml";
 
+        public const string DataFileName = "data.xml";
+
         public const string SettingsRootName = "Settings";
+
+        public const string DataRootName = "Data";
 
         public const string DefaultDownloadsFolderName = "Downloads";
 
         public const string TemporaryFileExtension = ".tmp";
-
-        public const string RootName = "MediaDownloaderState";
 
         public const string UrlItemsArrayName = "UrlItems";
 

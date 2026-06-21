@@ -9,12 +9,13 @@ using System.Xml.Serialization;
 namespace MediaDownloader.Services.Services;
 
 /// <summary>
-/// Persists application settings in Configuration\settings.xml.
+/// Persists application settings and media data in the Configuration folder.
 /// </summary>
 public sealed class XmlService : IXmlService
 {
-    private static readonly XmlSerializer Serializer =
-        new(typeof(ApplicationSettings));
+    private static readonly XmlSerializer SettingsSerializer = new(typeof(ApplicationSettings));
+    private static readonly XmlSerializer DataSerializer = new(typeof(MediaDownloaderState));
+    private readonly string dataFilePath;
     private readonly ILoggerWrapper loggerWrapper;
     private readonly string settingsFilePath;
 
@@ -27,10 +28,10 @@ public sealed class XmlService : IXmlService
         ArgumentNullException.ThrowIfNull(loggerWrapper);
 
         this.loggerWrapper = loggerWrapper;
-        settingsFilePath = Path.Combine(
-                                        AppContext.BaseDirectory,
-                                        ServiceConstants.Xml.ConfigurationFolderName,
-                                        ServiceConstants.Xml.SettingsFileName);
+        var configurationDirectoryPath = Path.Combine(AppContext.BaseDirectory, ServiceConstants.Xml.ConfigurationFolderName);
+        settingsFilePath = Path.Combine(configurationDirectoryPath,
+        ServiceConstants.Xml.SettingsFileName);
+        dataFilePath = Path.Combine(configurationDirectoryPath,ServiceConstants.Xml.DataFileName);
     }
 
     /// <inheritdoc />
@@ -46,7 +47,8 @@ public sealed class XmlService : IXmlService
         try
         {
             using var stream = File.OpenRead(settingsFilePath);
-            var settings = Serializer.Deserialize(stream) as ApplicationSettings ?? CreateDefaultSettings();
+            var settings = SettingsSerializer.Deserialize(stream) as ApplicationSettings ?? CreateDefaultSettings();
+
             if (string.IsNullOrWhiteSpace(settings.SaveFolderPath))
             {
                 settings.SaveFolderPath = GetDefaultSaveFolderPath();
@@ -57,12 +59,7 @@ public sealed class XmlService : IXmlService
         }
         catch (Exception exception)
         {
-            loggerWrapper.Write(string.Format(
-                                               LogConstants.XmlLoadFailed,
-                                               settingsFilePath,
-                                               exception.Message),
-                                LogLevel.Error);
-
+            LogLoadFailure(settingsFilePath, exception);
             var defaultSettings = CreateDefaultSettings();
             SaveSettings(defaultSettings);
             return defaultSettings;
@@ -73,22 +70,69 @@ public sealed class XmlService : IXmlService
     public void SaveSettings(ApplicationSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
+        SaveXml(settingsFilePath, settings, SettingsSerializer);
+    }
+
+    /// <inheritdoc />
+    public MediaDownloaderState LoadData()
+    {
+        if (!File.Exists(dataFilePath))
+        {
+            var emptyState = new MediaDownloaderState();
+            SaveData(emptyState);
+            return emptyState;
+        }
 
         try
         {
-            var directoryPath = Path.GetDirectoryName(settingsFilePath)!;
-            Directory.CreateDirectory(directoryPath);
+            using var stream = File.OpenRead(dataFilePath);
+            return DataSerializer.Deserialize(stream) as MediaDownloaderState ?? new MediaDownloaderState();
+        }
+        catch (Exception exception)
+        {
+            LogLoadFailure(dataFilePath, exception);
+            var emptyState = new MediaDownloaderState();
+            SaveData(emptyState);
+            return emptyState;
+        }
+    }
 
-            var temporaryFilePath = settingsFilePath + ServiceConstants.Xml.TemporaryFileExtension;
+    /// <inheritdoc />
+    public void SaveData(MediaDownloaderState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        SaveXml(dataFilePath, state, DataSerializer);
+    }
+
+    private static ApplicationSettings CreateDefaultSettings() =>
+                                                                    new()
+                                                                    {
+                                                                        SaveFolderPath = GetDefaultSaveFolderPath()
+                                                                    };
+
+    private static string GetDefaultSaveFolderPath() => Path.Combine(
+                                                                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                                                                     ServiceConstants.Xml.DefaultDownloadsFolderName);
+
+    private void SaveXml(
+                          string filePath,
+                          object value,
+                          XmlSerializer serializer)
+    {
+        try
+        {
+            var directoryPath = Path.GetDirectoryName(filePath)!;
+            Directory.CreateDirectory(directoryPath);
+            var temporaryFilePath = filePath + ServiceConstants.Xml.TemporaryFileExtension;
 
             try
             {
                 using (var stream = File.Create(temporaryFilePath))
                 {
-                    Serializer.Serialize(stream, settings);
+                    serializer.Serialize(stream, value);
                 }
 
-                File.Move(temporaryFilePath, settingsFilePath, overwrite: true);
+                File.Move(temporaryFilePath, filePath, overwrite: true);
             }
             finally
             {
@@ -99,18 +143,16 @@ public sealed class XmlService : IXmlService
         {
             loggerWrapper.Write(string.Format(
                                                LogConstants.XmlSaveFailed,
-                                               settingsFilePath,
+                                               filePath,
                                                exception.Message),
-                                LogLevel.Error);
+                LogLevel.Error);
             throw;
         }
     }
 
-    private static ApplicationSettings CreateDefaultSettings() =>
-                                                                   new()
-                                                                   {
-                                                                      SaveFolderPath = GetDefaultSaveFolderPath()
-                                                                   };
-
-    private static string GetDefaultSaveFolderPath() => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ServiceConstants.Xml.DefaultDownloadsFolderName);
+    private void LogLoadFailure(string filePath, Exception exception) => loggerWrapper.Write(string.Format(
+                                                                                                            LogConstants.XmlLoadFailed,
+                                                                                                            filePath,
+                                                                                                            exception.Message),
+                                                                                              LogLevel.Error);
 }

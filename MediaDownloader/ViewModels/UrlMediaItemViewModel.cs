@@ -55,8 +55,14 @@ public partial class UrlMediaItemViewModel : ObservableObject
         UploadDate = model.UploadDate;
         selectedMediaType = model.SelectedMediaType;
         selectedVideoQuality = model.SelectedVideoQuality;
+        isAudioSelected = string.Equals(
+                                        model.SelectedMediaType,
+                                        mp3Label,
+                                        StringComparison.OrdinalIgnoreCase);
         downloadProgress = model.DownloadProgress;
-        downloadStatus = readyStatus;
+        downloadStatus = string.IsNullOrWhiteSpace(model.DownloadStatus)
+                                                                        ? readyStatus
+                                                                        : model.DownloadStatus;
         AvailableVideoQualities = new(
             model.AvailableVideoQualities.Select(
                 option => new VideoQualityOptionViewModel(option, OnVideoQualitySelected)));
@@ -76,8 +82,34 @@ public partial class UrlMediaItemViewModel : ObservableObject
 
     public ObservableCollection<VideoQualityOptionViewModel> AvailableVideoQualities { get; }
 
-    partial void OnIsAudioSelectedChanged(bool value) =>
+    public bool AreVideoQualitiesVisible => !IsAudioSelected;
+
+    /// <summary>
+    /// Converts this view model to its persistence model.
+    /// </summary>
+    /// <returns>Persistable media data.</returns>
+    public UrlMediaItem ToModel() =>
+        new()
+        {
+            Url = Url,
+            Title = Title,
+            Author = Author,
+            ThumbnailUrl = ThumbnailUrl,
+            Duration = Duration,
+            UploadDate = UploadDate,
+            SelectedMediaType = SelectedMediaType,
+            SelectedVideoQuality = SelectedVideoQuality,
+            AvailableVideoQualities =
+                AvailableVideoQualities.Select(option => option.ToModel()).ToList(),
+            DownloadProgress = DownloadProgress,
+            DownloadStatus = DownloadStatus
+        };
+
+    partial void OnIsAudioSelectedChanged(bool value)
+    {
         SelectedMediaType = value ? mp3Label : mp4Label;
+        OnPropertyChanged(nameof(AreVideoQualitiesVisible));
+    }
 
     private void OnVideoQualitySelected(string quality) =>
         SelectedVideoQuality = quality;

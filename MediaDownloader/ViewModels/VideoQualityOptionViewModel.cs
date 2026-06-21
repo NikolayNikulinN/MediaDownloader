@@ -31,6 +31,17 @@ public partial class VideoQualityOptionViewModel : ObservableObject
 
     public string Name { get; }
 
+    /// <summary>
+    /// Converts this view model to its persistence model.
+    /// </summary>
+    /// <returns>Persistable video quality data.</returns>
+    public VideoQualityOption ToModel() =>
+        new()
+        {
+            Name = Name,
+            IsSelected = IsSelected
+        };
+
     partial void OnIsSelectedChanged(bool value)
     {
         if (value)
