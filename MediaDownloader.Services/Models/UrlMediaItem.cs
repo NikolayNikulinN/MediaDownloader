@@ -30,4 +30,6 @@ public sealed class UrlMediaItem
     public string DownloadStatus { get; set; } = ServiceConstants.Media.DownloadStatusReady;
 
     public string DownloadDate { get; set; } = string.Empty;
+
+    public string DownloadFilePath { get; set; } = string.Empty;
 }

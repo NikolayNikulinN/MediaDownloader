@@ -3,4 +3,5 @@
     <SolidColorBrush x:Key="DurationOverlayBrush" Color="#CC111111" />
     <SolidColorBrush x:Key="DurationOverlayTextBrush" Color="White" />
     <SolidColorBrush x:Key="MediaListPanelBackgroundBrush" Color="#FAFFFFFF" />
+    <SolidColorBrush x:Key="DeleteButtonIconBrush" Color="#C42B1C" />
 </ResourceDictionary>

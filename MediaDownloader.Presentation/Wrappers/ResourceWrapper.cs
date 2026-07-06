@@ -36,6 +36,16 @@ public sealed class ResourceWrapper
 
     public string DownloadToolTip => GetString(nameof(DownloadToolTip));
 
+    public string DeleteToolTip => GetString(nameof(DeleteToolTip));
+
+    public string DeleteConfirmationTitle => GetString(nameof(DeleteConfirmationTitle));
+
+    public string DeleteConfirmationMessage => GetString(nameof(DeleteConfirmationMessage));
+
+    public string DeleteDownloadedFileCheckBoxText => GetString(nameof(DeleteDownloadedFileCheckBoxText));
+
+    public string DeleteDownloadedFileFailedMessage => GetString(nameof(DeleteDownloadedFileFailedMessage));
+
     public string MediaModeToolTip => GetString(nameof(MediaModeToolTip));
 
     public string Mp4Label => GetString(nameof(Mp4Label));

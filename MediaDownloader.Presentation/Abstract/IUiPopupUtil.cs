@@ -1,3 +1,5 @@
+using MediaDownloader.Presentation.Models;
+
 namespace MediaDownloader.Presentation.Abstract;
 
 /// <summary>
@@ -42,6 +44,13 @@ public interface IUiPopupUtil
     /// </summary>
     /// <returns><see langword="true"/> only when the user explicitly confirms.</returns>
     bool ConfirmStopDownload();
+
+    /// <summary>
+    /// Asks the user to confirm deleting a media item.
+    /// </summary>
+    /// <param name="canDeleteDownloadedFile">Value indicating whether the downloaded file deletion option should be shown.</param>
+    /// <returns>User confirmation details.</returns>
+    DeleteMediaItemConfirmationResult ConfirmMediaItemDelete(bool canDeleteDownloadedFile);
 
     /// <summary>
     /// Displays a progress dialog while required tools are downloaded.

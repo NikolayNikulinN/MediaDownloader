@@ -97,11 +97,92 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string CancelButtonText {
+            get {
+                return ResourceManager.GetString("CancelButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking for updates....
+        /// </summary>
+        internal static string CheckingUpdatesStatus {
+            get {
+                return ResourceManager.GetString("CheckingUpdatesStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check for library updates.
+        /// </summary>
+        internal static string CheckLibrariesToolTip {
+            get {
+                return ResourceManager.GetString("CheckLibrariesToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
         internal static string CloseToolTip {
             get {
                 return ResourceManager.GetString("CloseToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string DeleteToolTip {
+            get {
+                return ResourceManager.GetString("DeleteToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download in best quality.
+        /// </summary>
+        internal static string DownloadBestQualityText {
+            get {
+                return ResourceManager.GetString("DownloadBestQualityText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        internal static string DownloadButtonText {
+            get {
+                return ResourceManager.GetString("DownloadButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        internal static string DownloadCancelledStatus {
+            get {
+                return ResourceManager.GetString("DownloadCancelledStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloaded.
+        /// </summary>
+        internal static string DownloadCompletedStatus {
+            get {
+                return ResourceManager.GetString("DownloadCompletedStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        internal static string DownloadFailedStatus {
+            get {
+                return ResourceManager.GetString("DownloadFailedStatus", resourceCulture);
             }
         }
         
@@ -115,11 +196,83 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloading... {0}%.
+        /// </summary>
+        internal static string DownloadingStatusFormat {
+            get {
+                return ResourceManager.GetString("DownloadingStatusFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading {0}....
+        /// </summary>
+        internal static string DownloadingToolStatus {
+            get {
+                return ResourceManager.GetString("DownloadingToolStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading required tools.
+        /// </summary>
+        internal static string DownloadingToolsTitle {
+            get {
+                return ResourceManager.GetString("DownloadingToolsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download.
         /// </summary>
         internal static string DownloadToolTip {
             get {
                 return ResourceManager.GetString("DownloadToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string ErrorPopupTitle {
+            get {
+                return ResourceManager.GetString("ErrorPopupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information.
+        /// </summary>
+        internal static string InformationPopupTitle {
+            get {
+                return ResourceManager.GetString("InformationPopupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All libraries have been updated.
+        /// </summary>
+        internal static string LibrariesUpdatedStatus {
+            get {
+                return ResourceManager.GetString("LibrariesUpdatedStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All libraries are up to date.
+        /// </summary>
+        internal static string LibrariesUpToDateStatus {
+            get {
+                return ResourceManager.GetString("LibrariesUpToDateStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to • .
+        /// </summary>
+        internal static string ListItemPrefix {
+            get {
+                return ResourceManager.GetString("ListItemPrefix", resourceCulture);
             }
         }
         
@@ -151,6 +304,28 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The following required tools are missing:
+        ///
+        ///{0}
+        ///
+        ///Download them now?.
+        /// </summary>
+        internal static string MissingToolsMessage {
+            get {
+                return ResourceManager.GetString("MissingToolsMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required tools are missing.
+        /// </summary>
+        internal static string MissingToolsTitle {
+            get {
+                return ResourceManager.GetString("MissingToolsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MP3.
         /// </summary>
         internal static string Mp3Label {
@@ -169,6 +344,15 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string NoButtonText {
+            get {
+                return ResourceManager.GetString("NoButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No data.
         /// </summary>
         internal static string NoDataText {
@@ -178,11 +362,56 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string OkButtonText {
+            get {
+                return ResourceManager.GetString("OkButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open folder.
         /// </summary>
         internal static string OpenFolderToolTip {
             get {
                 return ResourceManager.GetString("OpenFolderToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Tools folder.
+        /// </summary>
+        internal static string OpenToolsFolderToolTip {
+            get {
+                return ResourceManager.GetString("OpenToolsFolderToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing download....
+        /// </summary>
+        internal static string PreparingDownloadStatus {
+            get {
+                return ResourceManager.GetString("PreparingDownloadStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing update....
+        /// </summary>
+        internal static string PreparingUpdateStatus {
+            get {
+                return ResourceManager.GetString("PreparingUpdateStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Processing....
+        /// </summary>
+        internal static string ProcessingDownloadStatus {
+            get {
+                return ResourceManager.GetString("ProcessingDownloadStatus", resourceCulture);
             }
         }
         
@@ -223,11 +452,168 @@ namespace MediaDownloader.Presentation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you really want to stop the download? The incomplete file will be deleted..
+        /// </summary>
+        internal static string StopDownloadConfirmationMessage {
+            get {
+                return ResourceManager.GetString("StopDownloadConfirmationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop download.
+        /// </summary>
+        internal static string StopDownloadConfirmationTitle {
+            get {
+                return ResourceManager.GetString("StopDownloadConfirmationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop download.
+        /// </summary>
+        internal static string StopDownloadToolTip {
+            get {
+                return ResourceManager.GetString("StopDownloadToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopping....
+        /// </summary>
+        internal static string StoppingDownloadStatus {
+            get {
+                return ResourceManager.GetString("StoppingDownloadStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required tools could not be downloaded. {0}.
+        /// </summary>
+        internal static string ToolDownloadFailedMessage {
+            get {
+                return ResourceManager.GetString("ToolDownloadFailedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All missing files have been successfully downloaded.
+        /// </summary>
+        internal static string ToolDownloadSucceededMessage {
+            get {
+                return ResourceManager.GetString("ToolDownloadSucceededMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}: {1} → {2}.
+        /// </summary>
+        internal static string ToolUpdateDescriptionFormat {
+            get {
+                return ResourceManager.GetString("ToolUpdateDescriptionFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Libraries could not be updated. {0}.
+        /// </summary>
+        internal static string ToolUpdateFailedMessage {
+            get {
+                return ResourceManager.GetString("ToolUpdateFailedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New versions are available:
+        ///
+        ///{0}
+        ///
+        ///Download and replace the existing files in the Tools folder?.
+        /// </summary>
+        internal static string ToolUpdatesAvailableMessage {
+            get {
+                return ResourceManager.GetString("ToolUpdatesAvailableMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library updates are available.
+        /// </summary>
+        internal static string ToolUpdatesAvailableTitle {
+            get {
+                return ResourceManager.GetString("ToolUpdatesAvailableTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All libraries have been successfully updated.
+        /// </summary>
+        internal static string ToolUpdateSucceededMessage {
+            get {
+                return ResourceManager.GetString("ToolUpdateSucceededMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        internal static string UpdateButtonText {
+            get {
+                return ResourceManager.GetString("UpdateButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates are available.
+        /// </summary>
+        internal static string UpdatesAvailableStatus {
+            get {
+                return ResourceManager.GetString("UpdatesAvailableStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating libraries.
+        /// </summary>
+        internal static string UpdatingLibrariesTitle {
+            get {
+                return ResourceManager.GetString("UpdatingLibrariesTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating {0}....
+        /// </summary>
+        internal static string UpdatingLibraryStatus {
+            get {
+                return ResourceManager.GetString("UpdatingLibraryStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paste URL.
         /// </summary>
         internal static string UrlPlaceholder {
             get {
                 return ResourceManager.GetString("UrlPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string WarningPopupTitle {
+            get {
+                return ResourceManager.GetString("WarningPopupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string YesButtonText {
+            get {
+                return ResourceManager.GetString("YesButtonText", resourceCulture);
             }
         }
         

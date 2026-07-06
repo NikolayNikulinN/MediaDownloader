@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Resource Include="Images\*.png" />
+    <Resource Include="Images\*.svg" />
   </ItemGroup>
 
   <ItemGroup>

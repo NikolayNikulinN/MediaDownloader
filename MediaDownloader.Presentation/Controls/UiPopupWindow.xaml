@@ -63,13 +63,20 @@
             <ScrollViewer Grid.Row="1"
                           Padding="10"
                           VerticalScrollBarVisibility="Auto">
-                <TextBlock FontSize="14"
-                           LineHeight="21"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                           Text="{Binding Message}" />
+                <StackPanel>
+                    <TextBlock FontSize="14"
+                               LineHeight="21"
+                               TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                               Text="{Binding Message}" />
+                    <CheckBox Margin="0,14,0,0"
+                              Content="{Binding CheckBoxText}"
+                              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                              Visibility="{Binding CheckBoxVisibility}"
+                              IsChecked="{Binding IsCheckBoxChecked, Mode=TwoWay}" />
+                </StackPanel>
             </ScrollViewer>
 
             <Border Grid.Row="2"

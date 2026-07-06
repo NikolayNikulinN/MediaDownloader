@@ -288,7 +288,7 @@ Download and replace the existing files in the Tools folder?</value>
     <value>Stopping...</value>
   </data>
   <data name="DownloadCompletedStatus" xml:space="preserve">
-    <value>Completed</value>
+    <value>Downloaded</value>
   </data>
   <data name="DownloadCancelledStatus" xml:space="preserve">
     <value>Cancelled</value>
@@ -307,5 +307,20 @@ Download and replace the existing files in the Tools folder?</value>
   </data>
   <data name="NoButtonText" xml:space="preserve">
     <value>No</value>
+  </data>
+  <data name="DeleteToolTip" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteConfirmationTitle" xml:space="preserve">
+    <value>Delete item</value>
+  </data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>Do you really want to delete this item?</value>
+  </data>
+  <data name="DeleteDownloadedFileCheckBoxText" xml:space="preserve">
+    <value>Delete downloaded file from the file system</value>
+  </data>
+  <data name="DeleteDownloadedFileFailedMessage" xml:space="preserve">
+    <value>Downloaded file could not be deleted. {0}</value>
   </data>
 </root>

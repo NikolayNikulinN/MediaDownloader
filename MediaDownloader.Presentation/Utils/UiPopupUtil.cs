@@ -1,6 +1,7 @@
 using MediaDownloader.Presentation.Abstract;
 using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Controls;
+using MediaDownloader.Presentation.Models;
 using MediaDownloader.Presentation.Resources;
 using System.Windows;
 using System.Windows.Threading;
@@ -118,6 +119,35 @@ public sealed class UiPopupUtil : IUiPopupUtil
                                                resourceWrapper.NoButtonText);
 
     /// <inheritdoc />
+    public DeleteMediaItemConfirmationResult ConfirmMediaItemDelete(bool canDeleteDownloadedFile)
+    {
+        if (!canDeleteDownloadedFile)
+        {
+            return new DeleteMediaItemConfirmationResult
+            {
+                IsConfirmed = Show(
+                                   resourceWrapper.DeleteConfirmationMessage,
+                                   resourceWrapper.DeleteConfirmationTitle,
+                                   resourceWrapper.YesButtonText,
+                                   appConstants.Images.WarningPath,
+                                   resourceWrapper.CloseToolTip,
+                                   appConstants.Images.ClosePath,
+                                   resourceWrapper.NoButtonText)
+            };
+        }
+
+        return ShowWithCheckBox(
+                                resourceWrapper.DeleteConfirmationMessage,
+                                resourceWrapper.DeleteConfirmationTitle,
+                                resourceWrapper.YesButtonText,
+                                appConstants.Images.WarningPath,
+                                resourceWrapper.CloseToolTip,
+                                appConstants.Images.ClosePath,
+                                resourceWrapper.NoButtonText,
+                                resourceWrapper.DeleteDownloadedFileCheckBoxText);
+    }
+
+    /// <inheritdoc />
     public async Task ShowToolDownloadProgressAsync(Func<IProgress<string>, Task> downloadOperation) => await ShowProgressAsync(
                                                                                                                                  downloadOperation,
                                                                                                                                  resourceWrapper.DownloadingToolsTitle,
@@ -207,6 +237,43 @@ public sealed class UiPopupUtil : IUiPopupUtil
                         secondaryButtonText);
     }
 
+    private static DeleteMediaItemConfirmationResult ShowWithCheckBox(
+                                                                       string message,
+                                                                       string title,
+                                                                       string buttonText,
+                                                                       string iconPath,
+                                                                       string closeToolTip,
+                                                                       string closeIconPath,
+                                                                       string secondaryButtonText,
+                                                                       string checkBoxText)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+
+        var dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+        if (!dispatcher.CheckAccess())
+        {
+            return dispatcher.Invoke(() => ShowWithCheckBoxCore(
+                                                                message,
+                                                                title,
+                                                                buttonText,
+                                                                iconPath,
+                                                                closeToolTip,
+                                                                closeIconPath,
+                                                                secondaryButtonText,
+                                                                checkBoxText));
+        }
+
+        return ShowWithCheckBoxCore(
+                                    message,
+                                    title,
+                                    buttonText,
+                                    iconPath,
+                                    closeToolTip,
+                                    closeIconPath,
+                                    secondaryButtonText,
+                                    checkBoxText);
+    }
+
     private static bool ShowCore(
                                  string message,
                                  string title,
@@ -236,6 +303,44 @@ public sealed class UiPopupUtil : IUiPopupUtil
         }
 
         return popup.ShowDialog() == true;
+    }
+
+    private static DeleteMediaItemConfirmationResult ShowWithCheckBoxCore(
+                                                                          string message,
+                                                                          string title,
+                                                                          string buttonText,
+                                                                          string iconPath,
+                                                                          string closeToolTip,
+                                                                          string closeIconPath,
+                                                                          string secondaryButtonText,
+                                                                          string checkBoxText)
+    {
+        var popup = new UiPopupWindow(
+                                      message,
+                                      title,
+                                      buttonText,
+                                      iconPath,
+                                      closeToolTip,
+                                      closeIconPath,
+                                      secondaryButtonText,
+                                      checkBoxText);
+
+        var popupOwner = FindActiveWindow();
+        if (popupOwner is { IsVisible: true } && popupOwner != popup)
+        {
+            popup.Owner = popupOwner;
+        }
+        else
+        {
+            popup.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+
+        var isConfirmed = popup.ShowDialog() == true;
+        return new DeleteMediaItemConfirmationResult
+        {
+            IsConfirmed = isConfirmed,
+            DeleteDownloadedFile = isConfirmed && popup.IsCheckBoxChecked
+        };
     }
 
     private static Window? FindActiveWindow()

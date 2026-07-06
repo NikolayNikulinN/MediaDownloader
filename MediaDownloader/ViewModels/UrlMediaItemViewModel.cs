@@ -26,6 +26,9 @@ public partial class UrlMediaItemViewModel : ObservableObject
     private string downloadDate;
 
     [ObservableProperty]
+    private string downloadFilePath;
+
+    [ObservableProperty]
     private int downloadProgress;
 
     [ObservableProperty]
@@ -82,6 +85,7 @@ public partial class UrlMediaItemViewModel : ObservableObject
         downloadButtonIconPath = downloadIconPath;
         downloadButtonToolTip = downloadToolTip;
         downloadDate = model.DownloadDate;
+        downloadFilePath = model.DownloadFilePath;
         Url = model.Url;
         Title = model.Title;
         Author = model.Author;
@@ -140,7 +144,8 @@ public partial class UrlMediaItemViewModel : ObservableObject
                 AvailableVideoQualities.Select(option => option.ToModel()).ToList(),
             DownloadProgress = DownloadProgress,
             DownloadStatus = DownloadStatus,
-            DownloadDate = DownloadDate
+            DownloadDate = DownloadDate,
+            DownloadFilePath = DownloadFilePath
         };
 
     partial void OnIsAudioSelectedChanged(bool value)

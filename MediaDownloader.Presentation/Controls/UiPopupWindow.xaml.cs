@@ -13,7 +13,8 @@ internal partial class UiPopupWindow : FluentWindow
         string iconPath,
         string closeToolTip,
         string closeIconPath,
-        string? secondaryButtonText = null)
+        string? secondaryButtonText = null,
+        string? checkBoxText = null)
     {
         PopupTitle = title;
         Message = message;
@@ -25,6 +26,10 @@ internal partial class UiPopupWindow : FluentWindow
         SecondaryButtonVisibility = string.IsNullOrWhiteSpace(secondaryButtonText)
                                                                                     ? Visibility.Collapsed
                                                                                     : Visibility.Visible;
+        CheckBoxText = checkBoxText ?? string.Empty;
+        CheckBoxVisibility = string.IsNullOrWhiteSpace(checkBoxText)
+                                                                        ? Visibility.Collapsed
+                                                                        : Visibility.Visible;
 
         InitializeComponent();
         DataContext = this;
@@ -45,6 +50,12 @@ internal partial class UiPopupWindow : FluentWindow
     public string SecondaryButtonText { get; }
 
     public Visibility SecondaryButtonVisibility { get; }
+
+    public string CheckBoxText { get; }
+
+    public Visibility CheckBoxVisibility { get; }
+
+    public bool IsCheckBoxChecked { get; set; }
 
     private void TitleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {

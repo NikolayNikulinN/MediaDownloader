@@ -15,7 +15,7 @@ public static class LogConstants
 
     public const string WriteProbeFileNameFormat = ".write-test-{0:N}.tmp";
 
-    public const string OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
+    public const string OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
 
     public const string ApplicationStarted = "Application started.";
 
@@ -44,4 +44,14 @@ public static class LogConstants
     public const string ToolDownloadRetry = "Tool download retry {0} will start in {1:F1} seconds. {2}";
 
     public const string MediaDownloadFailed = "Media download failed for URL '{0}'. {1}";
+
+    public const string MediaItemDeletedFromList = "Media item deleted from list only. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'.";
+
+    public const string MediaItemDeletedFromListAndFileSystem = "Media item deleted from list and file system. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'.";
+
+    public const string MediaItemDeletedFromListFilePathMissing = "Media item deleted from list. File deletion was requested, but no downloaded file path is stored. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'.";
+
+    public const string MediaItemDeletedFromListFileNotFound = "Media item deleted from list. File deletion was requested, but the downloaded file was not found. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'.";
+
+    public const string MediaItemDeleteFileFailed = "Media item file deletion failed. The item was kept in the list. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'. {5}";
 }

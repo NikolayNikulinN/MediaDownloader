@@ -87,6 +87,7 @@ public partial class HomePageViewModel : ObservableObject
         BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         ToggleDownloadCommand = new RelayCommand<UrlMediaItemViewModel>(ToggleDownload);
+        DeleteUrlItemCommand = new RelayCommand<UrlMediaItemViewModel>(DeleteUrlItem, CanDeleteUrlItem);
     }
 
     public bool IsUrlInputEnabled => !IsAnalyzing;
@@ -109,6 +110,8 @@ public partial class HomePageViewModel : ObservableObject
     public IRelayCommand OpenOutputFolderCommand { get; }
 
     public IRelayCommand<UrlMediaItemViewModel> ToggleDownloadCommand { get; }
+
+    public IRelayCommand<UrlMediaItemViewModel> DeleteUrlItemCommand { get; }
 
     partial void OnUrlChanged(string value)
     {
@@ -241,6 +244,7 @@ public partial class HomePageViewModel : ObservableObject
         try
         {
             item.IsDownloading = true;
+            DeleteUrlItemCommand.NotifyCanExecuteChanged();
             item.DownloadProgress = 0;
             item.DownloadDate = string.Empty;
             UpdateDownloadStatus(item, 0);
@@ -257,30 +261,33 @@ public partial class HomePageViewModel : ObservableObject
                                                                                  value.Percentage);
             });
 
-            await mediaDownloadService.DownloadAsync( new MediaDownloadRequest {
-                                                                                 Url = item.Url,
-                                                                                 OutputFolder = OutputFolder,
-                                                                                 IsAudioOnly = item.IsAudioSelected,
-                                                                                 VideoQuality = item.SelectedVideoQuality
-                                                                               },
-                                                                               progress,
-                                                                               cancellationSource.Token);
+            var result = await mediaDownloadService.DownloadAsync( new MediaDownloadRequest {
+                                                                                              Url = item.Url,
+                                                                                              OutputFolder = OutputFolder,
+                                                                                              IsAudioOnly = item.IsAudioSelected,
+                                                                                              VideoQuality = item.SelectedVideoQuality
+                                                                                            },
+                                                                                            progress,
+                                                                                            cancellationSource.Token);
 
             item.DownloadProgress = 100;
             item.DownloadStatus = ResourceWrapper.DownloadCompletedStatus;
             item.DownloadDate = DateTime.Now.ToString(ServiceConstants.DateTimeFormats.DownloadDate, CultureInfo.CurrentCulture);
+            item.DownloadFilePath = result.FilePath;
         }
         catch (OperationCanceledException)
         {
             item.DownloadProgress = 0;
             item.DownloadStatus = ResourceWrapper.DownloadCancelledStatus;
             item.DownloadDate = string.Empty;
+            item.DownloadFilePath = string.Empty;
         }
         catch (Exception exception)
         {
             item.DownloadProgress = 0;
             item.DownloadStatus = ResourceWrapper.DownloadFailedStatus;
             item.DownloadDate = string.Empty;
+            item.DownloadFilePath = string.Empty;
             loggerWrapper.Write(string.Format(
                                                CultureInfo.InvariantCulture,
                                                LogConstants.MediaDownloadFailed,
@@ -292,6 +299,7 @@ public partial class HomePageViewModel : ObservableObject
         finally
         {
             item.IsDownloading = false;
+            DeleteUrlItemCommand.NotifyCanExecuteChanged();
             downloadCancellationSources.Remove(item);
             SaveUrlItems();
         }
@@ -303,6 +311,123 @@ public partial class HomePageViewModel : ObservableObject
                                                                 CultureInfo.CurrentUICulture,
                                                                 ResourceWrapper.DownloadingStatusFormat,
                                                                 percentage);
+
+    private void DeleteUrlItem(UrlMediaItemViewModel? item)
+    {
+        if (item is null
+            || item.IsDownloading)
+        {
+            return;
+        }
+
+        var confirmation = uiPopupService.ConfirmMediaItemDelete(HasDownloadedFilePath(item));
+        if (!confirmation.IsConfirmed)
+        {
+            return;
+        }
+
+        var wasDeletedFromFileSystem = false;
+        if (confirmation.DeleteDownloadedFile
+            && !TryDeleteDownloadedFile(item, out wasDeletedFromFileSystem))
+        {
+            return;
+        }
+
+        UrlItems.Remove(item);
+        SaveUrlItems();
+        LogMediaItemDeleted(item, wasDeletedFromFileSystem);
+    }
+
+    private static bool CanDeleteUrlItem(UrlMediaItemViewModel? item) =>
+        item is { IsDownloading: false };
+
+    private bool TryDeleteDownloadedFile(
+                                         UrlMediaItemViewModel item,
+                                         out bool wasDeletedFromFileSystem)
+    {
+        wasDeletedFromFileSystem = false;
+
+        if (string.IsNullOrWhiteSpace(item.DownloadFilePath))
+        {
+            loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
+                                               LogConstants.MediaItemDeletedFromListFilePathMissing,
+                                               item.Url,
+                                               item.Title,
+                                               item.SelectedMediaType,
+                                               item.DownloadDate),
+                                LogLevel.Warning);
+            return true;
+        }
+
+        if (!File.Exists(item.DownloadFilePath))
+        {
+            loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
+                                               LogConstants.MediaItemDeletedFromListFileNotFound,
+                                               item.Url,
+                                               item.Title,
+                                               item.SelectedMediaType,
+                                               item.DownloadDate,
+                                               item.DownloadFilePath),
+                                LogLevel.Warning);
+            return true;
+        }
+
+        try
+        {
+            File.Delete(item.DownloadFilePath);
+            wasDeletedFromFileSystem = true;
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException
+                                             or UnauthorizedAccessException
+                                             or System.Security.SecurityException)
+        {
+            loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
+                                               LogConstants.MediaItemDeleteFileFailed,
+                                               item.Url,
+                                               item.Title,
+                                               item.SelectedMediaType,
+                                               item.DownloadDate,
+                                               item.DownloadFilePath,
+                                               exception.Message),
+                                LogLevel.Error);
+            uiPopupService.ShowError(string.Format(
+                                                   CultureInfo.CurrentUICulture,
+                                                   ResourceWrapper.DeleteDownloadedFileFailedMessage,
+                                                   exception.Message));
+            return false;
+        }
+    }
+
+    private static bool HasDownloadedFilePath(UrlMediaItemViewModel item) =>
+        !string.IsNullOrWhiteSpace(item.DownloadFilePath);
+
+    private void LogMediaItemDeleted(
+                                     UrlMediaItemViewModel item,
+                                     bool wasDeletedFromFileSystem)
+    {
+        var message = wasDeletedFromFileSystem
+            ? string.Format(
+                            CultureInfo.InvariantCulture,
+                            LogConstants.MediaItemDeletedFromListAndFileSystem,
+                            item.Url,
+                            item.Title,
+                            item.SelectedMediaType,
+                            item.DownloadDate,
+                            item.DownloadFilePath)
+            : string.Format(
+                            CultureInfo.InvariantCulture,
+                            LogConstants.MediaItemDeletedFromList,
+                            item.Url,
+                            item.Title,
+                            item.SelectedMediaType,
+                            item.DownloadDate);
+
+        loggerWrapper.Write(message, LogLevel.Info);
+    }
 
     private void SaveUrlItems() => xmlService.SaveData(
                                                         new MediaDownloaderState
