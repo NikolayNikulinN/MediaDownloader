@@ -155,9 +155,9 @@ public static class ServiceConstants
 
         public const string BestAudioFormatSelector = "bestaudio/best";
 
-        public const string VideoFormatSelector = "bestvideo[height<={0}]+bestaudio/best[height<={0}]/best";
+        public const string VideoFormatSelector = "best[height<={0}][ext=mp4]/best[height<={0}]/bestvideo[height<={0}]+bestaudio/best";
 
-        public const string BestVideoFormatSelector = "bestvideo+bestaudio/best";
+        public const string BestVideoFormatSelector = "best[ext=mp4]/best/bestvideo+bestaudio";
 
         public const string MergeOutputFormatArgument = "--merge-output-format";
 
@@ -166,6 +166,16 @@ public static class ServiceConstants
         public const string Mp3Format = "mp3";
 
         public const string Mp4Format = "mp4";
+
+        public const string Mp4FileExtension = ".mp4";
+
+        public const string Mp3FileExtension = ".mp3";
+
+        public const string YouTubeVideoIdQueryParameter = "v";
+
+        public const string YouTubeVideoIdFileNameFormat = "[{0}]";
+
+        public const int FileSearchClockSkewSeconds = 5;
 
         public const string ProgressPrefix = "PROGRESS:";
 

@@ -38,6 +38,7 @@ public sealed class MediaDownloadService : IMediaDownloadService
         Directory.CreateDirectory(temporaryDirectoryPath);
 
         var finalFilePath = string.Empty;
+        var processStartUtc = DateTime.UtcNow;
         var errors = new List<string>();
         using var process = new Process
         {
@@ -127,10 +128,18 @@ public sealed class MediaDownloadService : IMediaDownloadService
             }
 
             if (string.IsNullOrWhiteSpace(finalFilePath)
-                || !File.Exists(finalFilePath))
+                || !File.Exists(ResolveFinalFilePath(finalFilePath, request.OutputFolder)))
             {
-                throw new FileNotFoundException(
-                    ServiceConstants.Download.CompletedFileNotFound);
+                finalFilePath = FindCompletedFilePath(request, processStartUtc);
+                if (string.IsNullOrWhiteSpace(finalFilePath))
+                {
+                    throw new FileNotFoundException(
+                        ServiceConstants.Download.CompletedFileNotFound);
+                }
+            }
+            else
+            {
+                finalFilePath = ResolveFinalFilePath(finalFilePath, request.OutputFolder);
             }
 
             return new MediaDownloadResult
@@ -263,6 +272,65 @@ public sealed class MediaDownloadService : IMediaDownloadService
                                 out var percentage)
                                 ? Math.Clamp((int)Math.Round(percentage), 0, 100)
                                 : 0;
+    }
+
+    private static string ResolveFinalFilePath(string filePath, string outputFolder)
+    {
+        var normalizedFilePath = filePath.Trim().Trim('"');
+        return Path.IsPathRooted(normalizedFilePath)
+                                            ? normalizedFilePath
+                                            : Path.Combine(outputFolder, normalizedFilePath);
+    }
+
+    private static string FindCompletedFilePath(
+                                                MediaDownloadRequest request,
+                                                DateTime processStartUtc)
+    {
+        var extension = request.IsAudioOnly
+                                  ? ServiceConstants.Download.Mp3FileExtension
+                                  : ServiceConstants.Download.Mp4FileExtension;
+        var earliestWriteTimeUtc = processStartUtc.AddSeconds(-ServiceConstants.Download.FileSearchClockSkewSeconds);
+        var candidateFiles = Directory.EnumerateFiles(request.OutputFolder, $"*{extension}", SearchOption.TopDirectoryOnly)
+                                      .Where(filePath => File.GetLastWriteTimeUtc(filePath) >= earliestWriteTimeUtc);
+
+        var videoId = TryGetYouTubeVideoId(request.Url);
+        if (!string.IsNullOrWhiteSpace(videoId))
+        {
+            var idMarker = string.Format(
+                                         CultureInfo.InvariantCulture,
+                                         ServiceConstants.Download.YouTubeVideoIdFileNameFormat,
+                                         videoId);
+            candidateFiles = candidateFiles.Where(filePath => Path.GetFileName(filePath).Contains(
+                                                                                               idMarker,
+                                                                                               StringComparison.OrdinalIgnoreCase));
+        }
+
+        return candidateFiles.OrderByDescending(File.GetLastWriteTimeUtc)
+                             .FirstOrDefault() ?? string.Empty;
+    }
+
+    private static string TryGetYouTubeVideoId(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            return string.Empty;
+        }
+
+        var query = uri.Query.TrimStart('?');
+        foreach (var parameter in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = parameter.Split('=', 2);
+            if (parts.Length == 2
+                && string.Equals(
+                                 Uri.UnescapeDataString(parts[0]),
+                                 ServiceConstants.Download.YouTubeVideoIdQueryParameter,
+                                 StringComparison.OrdinalIgnoreCase))
+            {
+                return Uri.UnescapeDataString(parts[1]);
+            }
+        }
+
+        return string.Empty;
     }
 
     private static async Task ReadOutputAsync(

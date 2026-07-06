@@ -50,6 +50,10 @@ public sealed class ResourceWrapper
 
     public string DownloadAllButtonText => GetString(nameof(DownloadAllButtonText));
 
+    public string DownloadAllConfirmationTitle => GetString(nameof(DownloadAllConfirmationTitle));
+
+    public string DownloadAllConfirmationMessage => GetString(nameof(DownloadAllConfirmationMessage));
+
     public string DeleteAllButtonText => GetString(nameof(DeleteAllButtonText));
 
     public string DeleteAllConfirmationTitle => GetString(nameof(DeleteAllConfirmationTitle));

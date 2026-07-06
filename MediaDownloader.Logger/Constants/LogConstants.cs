@@ -45,6 +45,8 @@ public static class LogConstants
 
     public const string MediaDownloadFailed = "Media download failed for URL '{0}'. {1}";
 
+    public const string MediaItemsDownloadBulkStarted = "Bulk media download started. Items requested: {0}. Each item will use its current selected media type and quality.";
+
     public const string MediaItemDeletedFromList = "Media item deleted from list only. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'.";
 
     public const string MediaItemDeletedFromListAndFileSystem = "Media item deleted from list and file system. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'.";

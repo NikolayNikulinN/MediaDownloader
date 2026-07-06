@@ -177,6 +177,16 @@ public sealed class UiPopupUtil : IUiPopupUtil
     }
 
     /// <inheritdoc />
+    public bool ConfirmAllMediaItemsDownload() => Show(
+                                                        resourceWrapper.DownloadAllConfirmationMessage,
+                                                        resourceWrapper.DownloadAllConfirmationTitle,
+                                                        resourceWrapper.YesButtonText,
+                                                        appConstants.Images.InformationPath,
+                                                        resourceWrapper.CloseToolTip,
+                                                        appConstants.Images.ClosePath,
+                                                        resourceWrapper.NoButtonText);
+
+    /// <inheritdoc />
     public async Task ShowToolDownloadProgressAsync(Func<IProgress<string>, Task> downloadOperation) => await ShowProgressAsync(
                                                                                                                                  downloadOperation,
                                                                                                                                  resourceWrapper.DownloadingToolsTitle,

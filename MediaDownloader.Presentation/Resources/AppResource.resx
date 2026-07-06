@@ -329,6 +329,12 @@ Download and replace the existing files in the Tools folder?</value>
   <data name="DownloadAllButtonText" xml:space="preserve">
     <value>Download all</value>
   </data>
+  <data name="DownloadAllConfirmationTitle" xml:space="preserve">
+    <value>Download all items</value>
+  </data>
+  <data name="DownloadAllConfirmationMessage" xml:space="preserve">
+    <value>Do you want to start downloading all items in the list?</value>
+  </data>
   <data name="DeleteAllButtonText" xml:space="preserve">
     <value>Delete all</value>
   </data>

@@ -43,6 +43,9 @@ public partial class HomePageViewModel : ObservableObject
     private bool isBulkAudioSelected;
 
     [ObservableProperty]
+    private bool isDownloadingAll;
+
+    [ObservableProperty]
     private bool isDeletingAll;
 
     [ObservableProperty]
@@ -102,6 +105,7 @@ public partial class HomePageViewModel : ObservableObject
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         ToggleDownloadCommand = new RelayCommand<UrlMediaItemViewModel>(ToggleDownload);
         DeleteUrlItemCommand = new RelayCommand<UrlMediaItemViewModel>(DeleteUrlItem, CanDeleteUrlItem);
+        DownloadAllUrlItemsCommand = new AsyncRelayCommand(DownloadAllUrlItemsAsync, CanDownloadAllUrlItems);
         DeleteAllUrlItemsCommand = new AsyncRelayCommand(DeleteAllUrlItemsAsync, CanDeleteAllUrlItems);
     }
 
@@ -127,6 +131,8 @@ public partial class HomePageViewModel : ObservableObject
     public IRelayCommand<UrlMediaItemViewModel> ToggleDownloadCommand { get; }
 
     public IRelayCommand<UrlMediaItemViewModel> DeleteUrlItemCommand { get; }
+
+    public IAsyncRelayCommand DownloadAllUrlItemsCommand { get; }
 
     public IAsyncRelayCommand DeleteAllUrlItemsCommand { get; }
 
@@ -160,11 +166,14 @@ public partial class HomePageViewModel : ObservableObject
         OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
         AddUrlCommand.NotifyCanExecuteChanged();
         DeleteUrlItemCommand.NotifyCanExecuteChanged();
+        DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
         DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
     }
 
+    partial void OnIsDownloadingAllChanged(bool value) => DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
+
     partial void OnIsBulkAudioSelectedChanged(bool value) =>
-        OnPropertyChanged(nameof(AreBulkVideoQualitiesVisible));
+        ApplyBulkAudioSelection();
 
     private string GetDefaultOutputFolder() =>
         Path.Combine(
@@ -220,6 +229,7 @@ public partial class HomePageViewModel : ObservableObject
         OnPropertyChanged(nameof(HasActiveOperation));
         UpdateBulkActionsState();
         DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+        DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
     }
 
     private async Task AddUrlAsync(CancellationToken cancellationToken)
@@ -314,8 +324,10 @@ public partial class HomePageViewModel : ObservableObject
 
         try
         {
+            NormalizeDownloadOptions(item);
             item.IsDownloading = true;
             DeleteUrlItemCommand.NotifyCanExecuteChanged();
+            DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
             DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CanUseBulkActions));
             OnPropertyChanged(nameof(HasActiveOperation));
@@ -374,6 +386,7 @@ public partial class HomePageViewModel : ObservableObject
         {
             item.IsDownloading = false;
             DeleteUrlItemCommand.NotifyCanExecuteChanged();
+            DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
             DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CanUseBulkActions));
             OnPropertyChanged(nameof(HasActiveOperation));
@@ -417,6 +430,99 @@ public partial class HomePageViewModel : ObservableObject
 
     private static bool CanDeleteUrlItem(UrlMediaItemViewModel? item) =>
         item is { IsDownloading: false };
+
+    private async Task DownloadAllUrlItemsAsync()
+    {
+        if (!CanDownloadAllUrlItems()
+            || !uiPopupService.ConfirmAllMediaItemsDownload())
+        {
+            return;
+        }
+
+        var items = UrlItems.ToList();
+        loggerWrapper.Write(string.Format(
+                                           CultureInfo.InvariantCulture,
+                                           LogConstants.MediaItemsDownloadBulkStarted,
+                                           items.Count),
+                            LogLevel.Info);
+
+        IsDownloadingAll = true;
+        await Task.Yield();
+
+        try
+        {
+            foreach (var item in items)
+            {
+                _ = DownloadMediaAsync(item);
+            }
+        }
+        finally
+        {
+            IsDownloadingAll = false;
+        }
+    }
+
+    private bool CanDownloadAllUrlItems() =>
+        UrlItems.Count > 1 && !IsDeletingAll && !IsDownloadingAll && UrlItems.All(item => !item.IsDownloading);
+
+    private void ApplyBulkDownloadOptions(UrlMediaItemViewModel item)
+    {
+        item.IsAudioSelected = IsBulkAudioSelected;
+        if (IsBulkAudioSelected)
+        {
+            return;
+        }
+
+        var selectedQuality = BulkAvailableVideoQualities.FirstOrDefault(option => option.IsSelected)?.Name;
+        if (string.IsNullOrWhiteSpace(selectedQuality))
+        {
+            return;
+        }
+
+        foreach (var quality in item.AvailableVideoQualities)
+        {
+            quality.IsSelected = string.Equals(
+                                               quality.Name,
+                                               selectedQuality,
+                                               StringComparison.OrdinalIgnoreCase);
+        }
+
+        item.SelectedVideoQuality = selectedQuality;
+    }
+
+    private static void NormalizeDownloadOptions(UrlMediaItemViewModel item)
+    {
+        if (item.IsAudioSelected)
+        {
+            return;
+        }
+
+        var selectedQuality = item.AvailableVideoQualities.FirstOrDefault(option => option.IsSelected)?.Name;
+        if (string.IsNullOrWhiteSpace(selectedQuality))
+        {
+            selectedQuality = item.SelectedVideoQuality;
+        }
+
+        if (string.IsNullOrWhiteSpace(selectedQuality))
+        {
+            selectedQuality = item.AvailableVideoQualities.FirstOrDefault()?.Name ?? string.Empty;
+        }
+
+        if (string.IsNullOrWhiteSpace(selectedQuality))
+        {
+            return;
+        }
+
+        foreach (var quality in item.AvailableVideoQualities)
+        {
+            quality.IsSelected = string.Equals(
+                                               quality.Name,
+                                               selectedQuality,
+                                               StringComparison.OrdinalIgnoreCase);
+        }
+
+        item.SelectedVideoQuality = selectedQuality;
+    }
 
     private async Task DeleteAllUrlItemsAsync()
     {
@@ -603,6 +709,7 @@ public partial class HomePageViewModel : ObservableObject
 
         OnPropertyChanged(nameof(HasActiveOperation));
         OnPropertyChanged(nameof(CanUseBulkActions));
+        DownloadAllUrlItemsCommand.NotifyCanExecuteChanged();
         DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
     }
 
@@ -631,8 +738,47 @@ public partial class HomePageViewModel : ObservableObject
                                                 {
                                                     Name = qualityName,
                                                     IsSelected = BulkAvailableVideoQualities.Count == 0
-                                                }));
+                                                },
+                                                ApplyBulkQualitySelection));
         }
+    }
+
+    private void ApplyBulkAudioSelection()
+    {
+        OnPropertyChanged(nameof(AreBulkVideoQualitiesVisible));
+        foreach (var item in UrlItems)
+        {
+            if (!item.IsDownloading)
+            {
+                item.IsAudioSelected = IsBulkAudioSelected;
+            }
+        }
+
+        SaveUrlItems();
+    }
+
+    private void ApplyBulkQualitySelection(string qualityName)
+    {
+        if (IsBulkAudioSelected
+            || string.IsNullOrWhiteSpace(qualityName))
+        {
+            return;
+        }
+
+        foreach (var item in UrlItems.Where(item => !item.IsDownloading))
+        {
+            foreach (var quality in item.AvailableVideoQualities)
+            {
+                quality.IsSelected = string.Equals(
+                                                   quality.Name,
+                                                   qualityName,
+                                                   StringComparison.OrdinalIgnoreCase);
+            }
+
+            item.SelectedVideoQuality = qualityName;
+        }
+
+        SaveUrlItems();
     }
 
     private static int ParseQualityHeight(string qualityName)
