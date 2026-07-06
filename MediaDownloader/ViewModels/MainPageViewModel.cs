@@ -9,6 +9,7 @@ using MediaDownloader.Presentation.Resources;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace MediaDownloader.ViewModels;
@@ -19,6 +20,7 @@ namespace MediaDownloader.ViewModels;
 public partial class MainPageViewModel : ObservableObject
 {
     private readonly ILoggerWrapper loggerWrapper;
+    private readonly HomePageViewModel homePageViewModel;
     private readonly IShellUtil shellUtil;
     private readonly IToolBootstrapService toolBootstrapService;
     private readonly IToolUpdateService toolUpdateService;
@@ -63,6 +65,7 @@ public partial class MainPageViewModel : ObservableObject
 
         AppConstants = appConstants;
         ResourceWrapper = resourceWrapper;
+        this.homePageViewModel = homePageViewModel;
         this.toolUpdateService = toolUpdateService;
         this.toolBootstrapService = toolBootstrapService;
         this.uiPopupUtil = uiPopupUtil;
@@ -70,6 +73,7 @@ public partial class MainPageViewModel : ObservableObject
         this.loggerWrapper = loggerWrapper;
         maximizeRestoreIconPath = AppConstants.Images.MaximizePath;
         maximizeRestoreToolTip = ResourceWrapper.MaximizeToolTip;
+        homePageViewModel.PropertyChanged += HomePageViewModelPropertyChanged;
 
         ListPages =
         [
@@ -93,7 +97,18 @@ public partial class MainPageViewModel : ObservableObject
 
     public IRelayCommand OpenToolsFolderCommand { get; }
 
-    partial void OnIsCheckingUpdatesChanged(bool value) => CheckLibraryUpdatesCommand.NotifyCanExecuteChanged();
+    public bool CanCloseApplication => !IsCheckingUpdates && !homePageViewModel.HasActiveOperation;
+
+    public string CloseButtonToolTip => CanCloseApplication
+        ? ResourceWrapper.CloseToolTip
+        : ResourceWrapper.CloseBlockedToolTip;
+
+    partial void OnIsCheckingUpdatesChanged(bool value)
+    {
+        CheckLibraryUpdatesCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanCloseApplication));
+        OnPropertyChanged(nameof(CloseButtonToolTip));
+    }
 
     /// <summary>
     /// Updates the title-bar icon and tooltip for the current window state.
@@ -105,6 +120,17 @@ public partial class MainPageViewModel : ObservableObject
     }
 
     private bool CanCheckLibraryUpdates() => !IsCheckingUpdates;
+
+    private void HomePageViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(HomePageViewModel.HasActiveOperation))
+        {
+            return;
+        }
+
+        OnPropertyChanged(nameof(CanCloseApplication));
+        OnPropertyChanged(nameof(CloseButtonToolTip));
+    }
 
     private async Task CheckLibraryUpdatesAsync(CancellationToken cancellationToken)
     {

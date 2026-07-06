@@ -53,6 +53,13 @@ public interface IUiPopupUtil
     DeleteMediaItemConfirmationResult ConfirmMediaItemDelete(bool canDeleteDownloadedFile);
 
     /// <summary>
+    /// Asks the user to confirm deleting all media items.
+    /// </summary>
+    /// <param name="canDeleteDownloadedFile">Value indicating whether the downloaded file deletion option should be shown.</param>
+    /// <returns>User confirmation details.</returns>
+    DeleteMediaItemConfirmationResult ConfirmAllMediaItemsDelete(bool canDeleteDownloadedFile);
+
+    /// <summary>
     /// Displays a progress dialog while required tools are downloaded.
     /// </summary>
     /// <param name="downloadOperation">Download operation that reports the current file name.</param>

@@ -132,6 +132,9 @@
   <data name="CloseToolTip" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="CloseBlockedToolTip" xml:space="preserve">
+    <value>The application cannot be closed while an operation is in progress.</value>
+  </data>
   <data name="AnalyzeUrlButtonText" xml:space="preserve">
     <value>Add URL</value>
   </data>
@@ -322,5 +325,20 @@ Download and replace the existing files in the Tools folder?</value>
   </data>
   <data name="DeleteDownloadedFileFailedMessage" xml:space="preserve">
     <value>Downloaded file could not be deleted. {0}</value>
+  </data>
+  <data name="DownloadAllButtonText" xml:space="preserve">
+    <value>Download all</value>
+  </data>
+  <data name="DeleteAllButtonText" xml:space="preserve">
+    <value>Delete all</value>
+  </data>
+  <data name="DeleteAllConfirmationTitle" xml:space="preserve">
+    <value>Delete all items</value>
+  </data>
+  <data name="DeleteAllConfirmationMessage" xml:space="preserve">
+    <value>Do you really want to delete all items?</value>
+  </data>
+  <data name="DeleteAllIncompleteWarningMessage" xml:space="preserve">
+    <value>Not all records were deleted. Failed records: {0}</value>
   </data>
 </root>

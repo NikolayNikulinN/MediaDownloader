@@ -10,6 +10,7 @@ using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
@@ -37,6 +38,12 @@ public partial class HomePageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isAnalyzing;
+
+    [ObservableProperty]
+    private bool isBulkAudioSelected;
+
+    [ObservableProperty]
+    private bool isDeletingAll;
 
     [ObservableProperty]
     private string outputFolder;
@@ -82,22 +89,30 @@ public partial class HomePageViewModel : ObservableObject
         outputFolder = settings.SaveFolderPath;
         var savedData = xmlService.LoadData();
         UrlItems = new(savedData.UrlItems.Select(CreateUrlMediaItemViewModel));
+        foreach (var item in UrlItems)
+        {
+            SubscribeUrlItem(item);
+        }
+
+        BulkAvailableVideoQualities = [];
+        UpdateBulkActionsState();
         UrlItems.CollectionChanged += UrlItemsCollectionChanged;
         AddUrlCommand = new AsyncRelayCommand(AddUrlAsync, CanAddUrl);
         BrowseOutputFolderCommand = new RelayCommand(BrowseOutputFolder);
         OpenOutputFolderCommand = new RelayCommand(OpenOutputFolder);
         ToggleDownloadCommand = new RelayCommand<UrlMediaItemViewModel>(ToggleDownload);
         DeleteUrlItemCommand = new RelayCommand<UrlMediaItemViewModel>(DeleteUrlItem, CanDeleteUrlItem);
+        DeleteAllUrlItemsCommand = new AsyncRelayCommand(DeleteAllUrlItemsAsync, CanDeleteAllUrlItems);
     }
 
-    public bool IsUrlInputEnabled => !IsAnalyzing;
-
     public bool IsUrlPlaceholderVisible =>
-        IsUrlInputEnabled && string.IsNullOrWhiteSpace(Url);
+        string.IsNullOrWhiteSpace(Url);
 
     public bool IsNoDataVisible => UrlItems.Count == 0;
 
     public ObservableCollection<UrlMediaItemViewModel> UrlItems { get; }
+
+    public ObservableCollection<VideoQualityOptionViewModel> BulkAvailableVideoQualities { get; }
 
     public ResourceWrapper ResourceWrapper { get; }
 
@@ -113,6 +128,18 @@ public partial class HomePageViewModel : ObservableObject
 
     public IRelayCommand<UrlMediaItemViewModel> DeleteUrlItemCommand { get; }
 
+    public IAsyncRelayCommand DeleteAllUrlItemsCommand { get; }
+
+    public bool IsBulkActionsVisible => UrlItems.Count > 1;
+
+    public bool CanUseBulkActions => UrlItems.Count > 1 && !IsDeletingAll && UrlItems.All(item => !item.IsDownloading);
+
+    public bool CanUsePageActions => !IsDeletingAll;
+
+    public bool HasActiveOperation => IsDeletingAll || UrlItems.Any(item => item.IsDownloading);
+
+    public bool AreBulkVideoQualitiesVisible => !IsBulkAudioSelected;
+
     partial void OnUrlChanged(string value)
     {
         OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
@@ -121,10 +148,23 @@ public partial class HomePageViewModel : ObservableObject
 
     partial void OnIsAnalyzingChanged(bool value)
     {
-        OnPropertyChanged(nameof(IsUrlInputEnabled));
         OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
         AddUrlCommand.NotifyCanExecuteChanged();
     }
+
+    partial void OnIsDeletingAllChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanUseBulkActions));
+        OnPropertyChanged(nameof(CanUsePageActions));
+        OnPropertyChanged(nameof(HasActiveOperation));
+        OnPropertyChanged(nameof(IsUrlPlaceholderVisible));
+        AddUrlCommand.NotifyCanExecuteChanged();
+        DeleteUrlItemCommand.NotifyCanExecuteChanged();
+        DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsBulkAudioSelectedChanged(bool value) =>
+        OnPropertyChanged(nameof(AreBulkVideoQualitiesVisible));
 
     private string GetDefaultOutputFolder() =>
         Path.Combine(
@@ -156,10 +196,31 @@ public partial class HomePageViewModel : ObservableObject
     }
 
     private bool CanAddUrl() =>
-        !IsAnalyzing && !string.IsNullOrWhiteSpace(Url);
+        !IsAnalyzing && !IsDeletingAll && !string.IsNullOrWhiteSpace(Url);
 
-    private void UrlItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+    private void UrlItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+        {
+            foreach (UrlMediaItemViewModel item in e.OldItems)
+            {
+                UnsubscribeUrlItem(item);
+            }
+        }
+
+        if (e.NewItems is not null)
+        {
+            foreach (UrlMediaItemViewModel item in e.NewItems)
+            {
+                SubscribeUrlItem(item);
+            }
+        }
+
         OnPropertyChanged(nameof(IsNoDataVisible));
+        OnPropertyChanged(nameof(HasActiveOperation));
+        UpdateBulkActionsState();
+        DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+    }
 
     private async Task AddUrlAsync(CancellationToken cancellationToken)
     {
@@ -169,7 +230,17 @@ public partial class HomePageViewModel : ObservableObject
             AnalysisStatus = ResourceWrapper.AnalyzingUrlStatus;
 
             var mediaItem = await ytDlpService.GetMediaInfoAsync(Url, cancellationToken);
-            UrlItems.Add(CreateUrlMediaItemViewModel(mediaItem));
+            if (UrlItems.Any(item => string.Equals(
+                                                    item.Url,
+                                                    mediaItem.Url,
+                                                    StringComparison.OrdinalIgnoreCase)))
+            {
+                Url = string.Empty;
+                AnalysisStatus = string.Empty;
+                return;
+            }
+
+            UrlItems.Insert(0, CreateUrlMediaItemViewModel(mediaItem));
             SaveUrlItems();
 
             Url = string.Empty;
@@ -245,6 +316,9 @@ public partial class HomePageViewModel : ObservableObject
         {
             item.IsDownloading = true;
             DeleteUrlItemCommand.NotifyCanExecuteChanged();
+            DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanUseBulkActions));
+            OnPropertyChanged(nameof(HasActiveOperation));
             item.DownloadProgress = 0;
             item.DownloadDate = string.Empty;
             UpdateDownloadStatus(item, 0);
@@ -300,6 +374,9 @@ public partial class HomePageViewModel : ObservableObject
         {
             item.IsDownloading = false;
             DeleteUrlItemCommand.NotifyCanExecuteChanged();
+            DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanUseBulkActions));
+            OnPropertyChanged(nameof(HasActiveOperation));
             downloadCancellationSources.Remove(item);
             SaveUrlItems();
         }
@@ -341,9 +418,101 @@ public partial class HomePageViewModel : ObservableObject
     private static bool CanDeleteUrlItem(UrlMediaItemViewModel? item) =>
         item is { IsDownloading: false };
 
+    private async Task DeleteAllUrlItemsAsync()
+    {
+        if (!CanDeleteAllUrlItems())
+        {
+            return;
+        }
+
+        var items = UrlItems.ToList();
+        var confirmation = uiPopupService.ConfirmAllMediaItemsDelete(items.Any(HasDownloadedFilePath));
+        if (!confirmation.IsConfirmed)
+        {
+            return;
+        }
+
+        IsDeletingAll = true;
+        await Task.Yield();
+
+        loggerWrapper.Write(string.Format(
+                                           CultureInfo.InvariantCulture,
+                                           LogConstants.MediaItemsDeleteBulkStarted,
+                                           items.Count,
+                                           confirmation.DeleteDownloadedFile),
+                            LogLevel.Info);
+
+        var removedFromListCount = 0;
+        var deletedFromFileSystemCount = 0;
+        var failedFileDeletionCount = 0;
+        var failedItems = new List<string>();
+
+        try
+        {
+            foreach (var item in items)
+            {
+                var deleteFileResult = (CanRemoveItem: true, WasDeletedFromFileSystem: false);
+                if (confirmation.DeleteDownloadedFile
+                    && !(deleteFileResult = await TryDeleteDownloadedFileAsync(item, showErrorPopup: false)).CanRemoveItem)
+                {
+                    failedFileDeletionCount++;
+                    failedItems.Add(CreateDeletedItemDescription(item));
+                    continue;
+                }
+
+                UrlItems.Remove(item);
+                removedFromListCount++;
+                if (deleteFileResult.WasDeletedFromFileSystem)
+                {
+                    deletedFromFileSystemCount++;
+                }
+
+                LogMediaItemDeleted(item, deleteFileResult.WasDeletedFromFileSystem);
+            }
+
+            SaveUrlItems();
+            loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
+                                               LogConstants.MediaItemsDeletedBulk,
+                                               removedFromListCount,
+                                               deletedFromFileSystemCount,
+                                               failedFileDeletionCount,
+                                               confirmation.DeleteDownloadedFile),
+                                LogLevel.Info);
+
+            if (failedFileDeletionCount > 0)
+            {
+                uiPopupService.ShowWarning(string.Format(
+                                                         CultureInfo.CurrentUICulture,
+                                                         ResourceWrapper.DeleteAllIncompleteWarningMessage,
+                                                         string.Join(", ", failedItems)));
+            }
+        }
+        finally
+        {
+            IsDeletingAll = false;
+        }
+    }
+
+    private bool CanDeleteAllUrlItems() =>
+        UrlItems.Count > 1 && !IsDeletingAll && UrlItems.All(item => !item.IsDownloading);
+
+    private Task<(bool CanRemoveItem, bool WasDeletedFromFileSystem)> TryDeleteDownloadedFileAsync(
+                                                                                                   UrlMediaItemViewModel item,
+                                                                                                   bool showErrorPopup = true) => Task.Run(
+                                                                                                       () =>
+                                                                                                       {
+                                                                                                           var canRemoveItem = TryDeleteDownloadedFile(
+                                                                                                                                                       item,
+                                                                                                                                                       out var wasDeletedFromFileSystem,
+                                                                                                                                                       showErrorPopup);
+                                                                                                           return (canRemoveItem, wasDeletedFromFileSystem);
+                                                                                                       });
+
     private bool TryDeleteDownloadedFile(
                                          UrlMediaItemViewModel item,
-                                         out bool wasDeletedFromFileSystem)
+                                         out bool wasDeletedFromFileSystem,
+                                         bool showErrorPopup = true)
     {
         wasDeletedFromFileSystem = false;
 
@@ -394,16 +563,89 @@ public partial class HomePageViewModel : ObservableObject
                                                item.DownloadFilePath,
                                                exception.Message),
                                 LogLevel.Error);
-            uiPopupService.ShowError(string.Format(
-                                                   CultureInfo.CurrentUICulture,
-                                                   ResourceWrapper.DeleteDownloadedFileFailedMessage,
-                                                   exception.Message));
+            if (showErrorPopup)
+            {
+                uiPopupService.ShowError(string.Format(
+                                                       CultureInfo.CurrentUICulture,
+                                                       ResourceWrapper.DeleteDownloadedFileFailedMessage,
+                                                       exception.Message));
+            }
+
             return false;
         }
     }
 
     private static bool HasDownloadedFilePath(UrlMediaItemViewModel item) =>
         !string.IsNullOrWhiteSpace(item.DownloadFilePath);
+
+    private static string CreateDeletedItemDescription(UrlMediaItemViewModel item) =>
+        string.IsNullOrWhiteSpace(item.Title) ? item.Url : item.Title;
+
+    private void UpdateBulkActionsState()
+    {
+        OnPropertyChanged(nameof(IsBulkActionsVisible));
+        OnPropertyChanged(nameof(CanUseBulkActions));
+        UpdateBulkAvailableVideoQualities();
+    }
+
+    private void SubscribeUrlItem(UrlMediaItemViewModel item) =>
+        item.PropertyChanged += UrlItemPropertyChanged;
+
+    private void UnsubscribeUrlItem(UrlMediaItemViewModel item) =>
+        item.PropertyChanged -= UrlItemPropertyChanged;
+
+    private void UrlItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(UrlMediaItemViewModel.IsDownloading))
+        {
+            return;
+        }
+
+        OnPropertyChanged(nameof(HasActiveOperation));
+        OnPropertyChanged(nameof(CanUseBulkActions));
+        DeleteAllUrlItemsCommand.NotifyCanExecuteChanged();
+    }
+
+    private void UpdateBulkAvailableVideoQualities()
+    {
+        BulkAvailableVideoQualities.Clear();
+        if (UrlItems.Count < 2)
+        {
+            return;
+        }
+
+        var commonQualityNames = UrlItems.Select(item => item.AvailableVideoQualities.Select(option => option.Name).ToHashSet(StringComparer.OrdinalIgnoreCase))
+                                         .Aggregate((left, right) =>
+                                         {
+                                             left.IntersectWith(right);
+                                             return left;
+                                         })
+                                         .OrderByDescending(ParseQualityHeight)
+                                         .ToArray();
+
+        foreach (var qualityName in commonQualityNames)
+        {
+            BulkAvailableVideoQualities.Add(
+                new VideoQualityOptionViewModel(
+                                                new VideoQualityOption
+                                                {
+                                                    Name = qualityName,
+                                                    IsSelected = BulkAvailableVideoQualities.Count == 0
+                                                }));
+        }
+    }
+
+    private static int ParseQualityHeight(string qualityName)
+    {
+        var normalizedQuality = qualityName.TrimEnd('p', 'P');
+        return int.TryParse(
+                            normalizedQuality,
+                            NumberStyles.Integer,
+                            CultureInfo.InvariantCulture,
+                            out var height)
+                            ? height
+                            : 0;
+    }
 
     private void LogMediaItemDeleted(
                                      UrlMediaItemViewModel item,

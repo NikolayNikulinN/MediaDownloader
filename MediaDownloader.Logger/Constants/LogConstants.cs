@@ -54,4 +54,8 @@ public static class LogConstants
     public const string MediaItemDeletedFromListFileNotFound = "Media item deleted from list. File deletion was requested, but the downloaded file was not found. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'.";
 
     public const string MediaItemDeleteFileFailed = "Media item file deletion failed. The item was kept in the list. Url: '{0}'. Title: '{1}'. Media type: '{2}'. Download date: '{3}'. File path: '{4}'. {5}";
+
+    public const string MediaItemsDeleteBulkStarted = "Bulk media item deletion started. Items requested: {0}. File deletion requested: {1}.";
+
+    public const string MediaItemsDeletedBulk = "Media items deleted in bulk. Removed from list: {0}. Deleted from file system: {1}. Failed file deletions: {2}. File deletion requested: {3}.";
 }

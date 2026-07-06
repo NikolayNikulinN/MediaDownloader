@@ -148,6 +148,35 @@ public sealed class UiPopupUtil : IUiPopupUtil
     }
 
     /// <inheritdoc />
+    public DeleteMediaItemConfirmationResult ConfirmAllMediaItemsDelete(bool canDeleteDownloadedFile)
+    {
+        if (!canDeleteDownloadedFile)
+        {
+            return new DeleteMediaItemConfirmationResult
+            {
+                IsConfirmed = Show(
+                                   resourceWrapper.DeleteAllConfirmationMessage,
+                                   resourceWrapper.DeleteAllConfirmationTitle,
+                                   resourceWrapper.YesButtonText,
+                                   appConstants.Images.WarningPath,
+                                   resourceWrapper.CloseToolTip,
+                                   appConstants.Images.ClosePath,
+                                   resourceWrapper.NoButtonText)
+            };
+        }
+
+        return ShowWithCheckBox(
+                                resourceWrapper.DeleteAllConfirmationMessage,
+                                resourceWrapper.DeleteAllConfirmationTitle,
+                                resourceWrapper.YesButtonText,
+                                appConstants.Images.WarningPath,
+                                resourceWrapper.CloseToolTip,
+                                appConstants.Images.ClosePath,
+                                resourceWrapper.NoButtonText,
+                                resourceWrapper.DeleteDownloadedFileCheckBoxText);
+    }
+
+    /// <inheritdoc />
     public async Task ShowToolDownloadProgressAsync(Func<IProgress<string>, Task> downloadOperation) => await ShowProgressAsync(
                                                                                                                                  downloadOperation,
                                                                                                                                  resourceWrapper.DownloadingToolsTitle,

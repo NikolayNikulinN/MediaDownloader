@@ -1,4 +1,5 @@
 using MediaDownloader.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using Wpf.Ui.Controls;
@@ -45,11 +46,24 @@ public partial class MainPage : FluentWindow
     private void MaximizeRestoreButtonClick(object sender, RoutedEventArgs e) =>
         ToggleWindowState();
 
-    private void CloseButtonClick(object sender, RoutedEventArgs e) =>
-        Close();
+    private void CloseButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (viewModel.CanCloseApplication)
+        {
+            Close();
+        }
+    }
 
     private void WindowStateChanged(object sender, EventArgs e) =>
         viewModel.UpdateMaximizeRestoreState(WindowState == WindowState.Maximized);
+
+    private void WindowClosing(object? sender, CancelEventArgs e)
+    {
+        if (!viewModel.CanCloseApplication)
+        {
+            e.Cancel = true;
+        }
+    }
 
     private void ToggleWindowState() =>
         WindowState = WindowState == WindowState.Maximized

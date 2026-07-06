@@ -1,4 +1,7 @@
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
+using MediaDownloader.ViewModels;
 
 namespace MediaDownloader.Views;
 
@@ -13,5 +16,30 @@ public partial class HomePage : UserControl
     public HomePage()
     {
         InitializeComponent();
+    }
+
+    private async void UrlTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        if (sender is not TextBox textBox
+            || textBox.DataContext is not HomePageViewModel viewModel
+            || !viewModel.AddUrlCommand.CanExecute(null))
+        {
+            return;
+        }
+
+        await viewModel.AddUrlCommand.ExecuteAsync(null);
+        await textBox.Dispatcher.InvokeAsync(
+                                             () =>
+                                             {
+                                                 textBox.Focus();
+                                                 Keyboard.Focus(textBox);
+                                             },
+                                             DispatcherPriority.ContextIdle);
     }
 }

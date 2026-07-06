@@ -20,6 +20,8 @@ public sealed class ResourceWrapper
 
     public string CloseToolTip => GetString(nameof(CloseToolTip));
 
+    public string CloseBlockedToolTip => GetString(nameof(CloseBlockedToolTip));
+
     public string AnalyzeUrlButtonText => GetString(nameof(AnalyzeUrlButtonText));
 
     public string YouTubeUrlToolTip => GetString(nameof(YouTubeUrlToolTip));
@@ -45,6 +47,16 @@ public sealed class ResourceWrapper
     public string DeleteDownloadedFileCheckBoxText => GetString(nameof(DeleteDownloadedFileCheckBoxText));
 
     public string DeleteDownloadedFileFailedMessage => GetString(nameof(DeleteDownloadedFileFailedMessage));
+
+    public string DownloadAllButtonText => GetString(nameof(DownloadAllButtonText));
+
+    public string DeleteAllButtonText => GetString(nameof(DeleteAllButtonText));
+
+    public string DeleteAllConfirmationTitle => GetString(nameof(DeleteAllConfirmationTitle));
+
+    public string DeleteAllConfirmationMessage => GetString(nameof(DeleteAllConfirmationMessage));
+
+    public string DeleteAllIncompleteWarningMessage => GetString(nameof(DeleteAllIncompleteWarningMessage));
 
     public string MediaModeToolTip => GetString(nameof(MediaModeToolTip));
 
