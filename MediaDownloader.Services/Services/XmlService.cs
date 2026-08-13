@@ -24,11 +24,18 @@ public sealed class XmlService : IXmlService
     /// </summary>
     /// <param name="loggerWrapper">Application logger.</param>
     public XmlService(ILoggerWrapper loggerWrapper)
+        : this(
+            loggerWrapper,
+            Path.Combine(AppContext.BaseDirectory, ServiceConstants.Xml.ConfigurationFolderName))
+    {
+    }
+
+    internal XmlService(ILoggerWrapper loggerWrapper, string configurationDirectoryPath)
     {
         ArgumentNullException.ThrowIfNull(loggerWrapper);
+        ArgumentException.ThrowIfNullOrWhiteSpace(configurationDirectoryPath);
 
         this.loggerWrapper = loggerWrapper;
-        var configurationDirectoryPath = Path.Combine(AppContext.BaseDirectory, ServiceConstants.Xml.ConfigurationFolderName);
         settingsFilePath = Path.Combine(configurationDirectoryPath,
         ServiceConstants.Xml.SettingsFileName);
         dataFilePath = Path.Combine(configurationDirectoryPath, ServiceConstants.Xml.DataFileName);

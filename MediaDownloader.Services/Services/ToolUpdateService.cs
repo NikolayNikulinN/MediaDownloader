@@ -2,6 +2,7 @@ using MediaDownloader.Logger.Constants;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Models;
+using MediaDownloader.Services.Updates;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
 using System.Text.Json;
@@ -49,7 +50,7 @@ public sealed class ToolUpdateService : IToolUpdateService
         using var document = JsonDocument.Parse(response);
         var latestVersion = document.RootElement.GetProperty(ServiceConstants.Tools.GitHubTagNameProperty).GetString()?.Trim() ?? string.Empty;
 
-        return VersionsMatch(currentVersion, latestVersion)
+        return ToolVersionComparer.VersionsMatch(currentVersion, latestVersion)
                                                             ? null
                                                             : new ToolUpdateInfo
                                                             {
@@ -63,10 +64,10 @@ public sealed class ToolUpdateService : IToolUpdateService
     private async Task<ToolUpdateInfo?> CheckFfmpegAsync(CancellationToken cancellationToken)
     {
         var versionOutput = await ffmpegService.GetFfmpegVersionAsync(cancellationToken);
-        var currentVersion = ParseFfmpegVersion(versionOutput);
+        var currentVersion = ToolVersionComparer.ParseFfmpegVersion(versionOutput);
         var latestVersion = (await httpClient.GetStringAsync(ServiceConstants.Tools.FfmpegLatestVersionUrl, cancellationToken)).Trim();
 
-        return VersionsMatch(currentVersion, latestVersion)
+        return ToolVersionComparer.VersionsMatch(currentVersion, latestVersion)
                                                             ? null
                                                             : new ToolUpdateInfo
                                                             {
@@ -109,11 +110,4 @@ public sealed class ToolUpdateService : IToolUpdateService
         return output?.Trim() ?? string.Empty;
     }
 
-    private static string ParseFfmpegVersion(string output)
-    {
-        var parts = output.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        return parts.Length >= ServiceConstants.Tools.FfmpegVersionTokenCount ? parts[ServiceConstants.Tools.FfmpegVersionTokenIndex] : output.Trim();
-    }
-
-    private static bool VersionsMatch(string currentVersion, string latestVersion) => currentVersion.Equals(latestVersion, StringComparison.OrdinalIgnoreCase) || currentVersion.StartsWith($"{latestVersion}-", StringComparison.OrdinalIgnoreCase);
 }

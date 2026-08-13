@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaDownloader.Logger", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaDownloader.Services", "..\MediaDownloader.Services\MediaDownloader.Services.csproj", "{B40A9647-EB56-4E38-9EE7-1A7392BFA1FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaDownloader.Services.Tests", "..\MediaDownloader.Services.Tests\MediaDownloader.Services.Tests.csproj", "{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaDownloader.Tests", "..\MediaDownloader.Tests\MediaDownloader.Tests.csproj", "{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +87,30 @@ Global
 		{B40A9647-EB56-4E38-9EE7-1A7392BFA1FA}.Release|x64.Build.0 = Release|Any CPU
 		{B40A9647-EB56-4E38-9EE7-1A7392BFA1FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{B40A9647-EB56-4E38-9EE7-1A7392BFA1FA}.Release|x86.Build.0 = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|x64.Build.0 = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Debug|x86.Build.0 = Debug|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|x64.ActiveCfg = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|x64.Build.0 = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|x86.ActiveCfg = Release|Any CPU
+		{DC568CE6-1C4C-44A0-84F5-1EEF58D307C9}.Release|x86.Build.0 = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|x64.Build.0 = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Debug|x86.Build.0 = Debug|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|x64.ActiveCfg = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|x64.Build.0 = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|x86.ActiveCfg = Release|Any CPU
+		{498B9EE9-7A8C-480B-AEC5-EE939B3B3E81}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,10 @@
 using MediaDownloader.Logger.Constants;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
+using MediaDownloader.Services.Download;
 using MediaDownloader.Services.Models;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
-using System.Globalization;
 
 namespace MediaDownloader.Services.Services;
 
@@ -41,10 +41,10 @@ public sealed class MediaDownloadService : IMediaDownloadService
         var processStartUtc = DateTime.UtcNow;
         var errors = new List<string>();
         using var process = new Process
-        {
-            StartInfo = CreateStartInfo(ytDlpPath, request, temporaryDirectoryPath),
-            EnableRaisingEvents = true
-        };
+            {
+                StartInfo = YtDlpDownloadStartInfoFactory.Create(ytDlpPath, request, temporaryDirectoryPath),
+                EnableRaisingEvents = true
+            };
 
         try
         {
@@ -60,7 +60,7 @@ public sealed class MediaDownloadService : IMediaDownloadService
                 {
                     progress?.Report(new MediaDownloadProgress
                                                               {
-                                                                 Percentage = ParsePercentage(line)
+                                                                 Percentage = MediaDownloadOutputParser.ParsePercentage(line)
                                                               });
                 }
                 else if (line.StartsWith(ServiceConstants.Download.PostProcessPrefix, StringComparison.Ordinal))
@@ -128,9 +128,9 @@ public sealed class MediaDownloadService : IMediaDownloadService
             }
 
             if (string.IsNullOrWhiteSpace(finalFilePath)
-                || !File.Exists(ResolveFinalFilePath(finalFilePath, request.OutputFolder)))
+                || !File.Exists(MediaDownloadOutputParser.ResolveFinalFilePath(finalFilePath, request.OutputFolder)))
             {
-                finalFilePath = FindCompletedFilePath(request, processStartUtc);
+                finalFilePath = MediaDownloadOutputParser.FindCompletedFilePath(request, processStartUtc);
                 if (string.IsNullOrWhiteSpace(finalFilePath))
                 {
                     throw new FileNotFoundException(
@@ -139,7 +139,7 @@ public sealed class MediaDownloadService : IMediaDownloadService
             }
             else
             {
-                finalFilePath = ResolveFinalFilePath(finalFilePath, request.OutputFolder);
+                finalFilePath = MediaDownloadOutputParser.ResolveFinalFilePath(finalFilePath, request.OutputFolder);
             }
 
             return new MediaDownloadResult
@@ -151,186 +151,6 @@ public sealed class MediaDownloadService : IMediaDownloadService
         {
             DeleteTemporaryDirectory(temporaryDirectoryPath);
         }
-    }
-
-    private static ProcessStartInfo CreateStartInfo(
-                                                    string ytDlpPath,
-                                                    MediaDownloadRequest request,
-                                                    string temporaryDirectoryPath)
-    {
-        var startInfo = new ProcessStartInfo
-        {
-            FileName = ytDlpPath,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        AddCommonArguments(
-                            startInfo,
-                            request,
-                            temporaryDirectoryPath);
-
-        if (request.IsAudioOnly)
-        {
-            AddAudioArguments(startInfo);
-        }
-        else
-        {
-            AddVideoArguments(startInfo, request.VideoQuality);
-        }
-
-        startInfo.ArgumentList.Add(request.Url);
-        return startInfo;
-    }
-
-    private static void AddCommonArguments(
-                                            ProcessStartInfo startInfo,
-                                            MediaDownloadRequest request,
-                                            string temporaryDirectoryPath)
-    {
-        startInfo.ArgumentList.Add(ServiceConstants.YtDlp.NoPlaylistArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.IgnoreConfigArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.NoSimulateArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.NoUpdateArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.NoColorArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.NewLineArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.WindowsFileNamesArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.ProgressArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.ProgressTemplateArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.ProgressTemplate);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.PostProcessTemplateArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.PostProcessTemplate);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.PrintArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.AfterMoveFilePathTemplate);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.FfmpegLocationArgument);
-        startInfo.ArgumentList.Add(ToolPathResolver.ToolsDirectoryPath);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.PathsArgument);
-        startInfo.ArgumentList.Add($"{ServiceConstants.Download.TempPathPrefix}{temporaryDirectoryPath}");
-        startInfo.ArgumentList.Add(ServiceConstants.Download.PathsArgument);
-        startInfo.ArgumentList.Add($"{ServiceConstants.Download.HomePathPrefix}{request.OutputFolder}");
-        startInfo.ArgumentList.Add(ServiceConstants.Download.OutputArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.OutputTemplate);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.ForceOverwriteArgument);
-    }
-
-    private static void AddAudioArguments(ProcessStartInfo startInfo)
-    {
-        startInfo.ArgumentList.Add(ServiceConstants.Download.ExtractAudioArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.AudioFormatArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.Mp3Format);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.AudioQualityArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.BestAudioQuality);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.FormatArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.BestAudioFormatSelector);
-    }
-
-    private static void AddVideoArguments(ProcessStartInfo startInfo, string selectedQuality)
-    {
-        var height = ParseHeight(selectedQuality);
-        var formatSelector = height > 0
-                                        ? string.Format(
-                                                        CultureInfo.InvariantCulture,
-                                                        ServiceConstants.Download.VideoFormatSelector,
-                                                        height)
-                                        : ServiceConstants.Download.BestVideoFormatSelector;
-
-        startInfo.ArgumentList.Add(ServiceConstants.Download.FormatArgument);
-        startInfo.ArgumentList.Add(formatSelector);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.MergeOutputFormatArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.Mp4Format);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.RemuxVideoArgument);
-        startInfo.ArgumentList.Add(ServiceConstants.Download.Mp4Format);
-    }
-
-    private static int ParseHeight(string quality)
-    {
-        var numericValue = quality.TrimEnd('p', 'P');
-        return int.TryParse(
-                            numericValue,
-                            NumberStyles.None,
-                            CultureInfo.InvariantCulture,
-                            out var height)
-                            ? height
-                            : 0;
-    }
-
-    private static int ParsePercentage(string line)
-    {
-        var value = line[ServiceConstants.Download.ProgressPrefix.Length..]
-                                                                            .Replace(
-                                                                                     ServiceConstants.Download.PercentSymbol,
-                                                                                     string.Empty,
-                                                                                     StringComparison.Ordinal)
-                                                                            .Trim();
-
-        return double.TryParse(
-                                value,
-                                NumberStyles.Float,
-                                CultureInfo.InvariantCulture,
-                                out var percentage)
-                                ? Math.Clamp((int)Math.Round(percentage), 0, 100)
-                                : 0;
-    }
-
-    private static string ResolveFinalFilePath(string filePath, string outputFolder)
-    {
-        var normalizedFilePath = filePath.Trim().Trim('"');
-        return Path.IsPathRooted(normalizedFilePath)
-                                            ? normalizedFilePath
-                                            : Path.Combine(outputFolder, normalizedFilePath);
-    }
-
-    private static string FindCompletedFilePath(
-                                                MediaDownloadRequest request,
-                                                DateTime processStartUtc)
-    {
-        var extension = request.IsAudioOnly
-                                  ? ServiceConstants.Download.Mp3FileExtension
-                                  : ServiceConstants.Download.Mp4FileExtension;
-        var earliestWriteTimeUtc = processStartUtc.AddSeconds(-ServiceConstants.Download.FileSearchClockSkewSeconds);
-        var candidateFiles = Directory.EnumerateFiles(request.OutputFolder, $"*{extension}", SearchOption.TopDirectoryOnly)
-                                      .Where(filePath => File.GetLastWriteTimeUtc(filePath) >= earliestWriteTimeUtc);
-
-        var videoId = TryGetYouTubeVideoId(request.Url);
-        if (!string.IsNullOrWhiteSpace(videoId))
-        {
-            var idMarker = string.Format(
-                                         CultureInfo.InvariantCulture,
-                                         ServiceConstants.Download.YouTubeVideoIdFileNameFormat,
-                                         videoId);
-            candidateFiles = candidateFiles.Where(filePath => Path.GetFileName(filePath).Contains(
-                                                                                               idMarker,
-                                                                                               StringComparison.OrdinalIgnoreCase));
-        }
-
-        return candidateFiles.OrderByDescending(File.GetLastWriteTimeUtc)
-                             .FirstOrDefault() ?? string.Empty;
-    }
-
-    private static string TryGetYouTubeVideoId(string url)
-    {
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
-        {
-            return string.Empty;
-        }
-
-        var query = uri.Query.TrimStart('?');
-        foreach (var parameter in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var parts = parameter.Split('=', 2);
-            if (parts.Length == 2
-                && string.Equals(
-                                 Uri.UnescapeDataString(parts[0]),
-                                 ServiceConstants.Download.YouTubeVideoIdQueryParameter,
-                                 StringComparison.OrdinalIgnoreCase))
-            {
-                return Uri.UnescapeDataString(parts[1]);
-            }
-        }
-
-        return string.Empty;
     }
 
     private static async Task ReadOutputAsync(
