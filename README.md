@@ -132,10 +132,12 @@ Current test coverage includes service parsing and command-building logic, XML p
 ## Build MSI
 
 ```powershell
-dotnet build MediaDownloader.Installer\MediaDownloader.Installer.wixproj
+dotnet build MediaDownloader.Installer\MediaDownloader.Installer.wixproj -c Release -p:Platform=x64
 ```
 
-The installer project packages the main application output. Test projects are not included in the MSI.
+The x64 MSI is written to `MediaDownloader.Installer\bin\x64\Release\MediaDownloader.msi`.
+Use that file as the GitHub Release asset. The installer project packages the main application output.
+Test projects are not included in the MSI.
 
 ## Notes
 

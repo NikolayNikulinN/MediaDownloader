@@ -1,17 +1,35 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Directory Id="ToolsFolder" Name="Tools" />
+    </DirectoryRef>
+
     <ComponentGroup Id="ApplicationBinaries" Directory="INSTALLFOLDER">
       <Component Id="ApplicationFiles" Guid="0A34B7C5-F173-4F80-82ED-1A54AA84ED98">
         <File Id="MediaDownloaderExe" Source="$(var.MediaDownloader.TargetDir)MediaDownloader.exe" KeyPath="yes" />
         <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.deps.json" />
         <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.runtimeconfig.json" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.Logger.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.Presentation.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)MediaDownloader.Services.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)CommunityToolkit.Mvvm.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)Microsoft.Extensions.DependencyInjection.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Polly.Core.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Serilog.dll" />
+        <File Source="$(var.MediaDownloader.TargetDir)Serilog.Sinks.File.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)Wpf.Ui.dll" />
         <File Source="$(var.MediaDownloader.TargetDir)Wpf.Ui.Abstractions.dll" />
+      </Component>
+      <Component Id="FfmpegTool" Directory="ToolsFolder" Guid="4E5537E5-4D85-42FC-8F34-33D2FF2B1D42">
+        <File Id="FfmpegExe" Source="..\MediaDownloader.Services\Tools\ffmpeg.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="FfprobeTool" Directory="ToolsFolder" Guid="213C8C39-0A3B-4CB2-8AB4-340D14B1B233">
+        <File Id="FfprobeExe" Source="..\MediaDownloader.Services\Tools\ffprobe.exe" KeyPath="yes" />
+      </Component>
+      <Component Id="YtDlpTool" Directory="ToolsFolder" Guid="B7A8D856-258F-44C5-9607-26141991E972">
+        <File Id="YtDlpExe" Source="..\MediaDownloader.Services\Tools\yt-dlp.exe" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>

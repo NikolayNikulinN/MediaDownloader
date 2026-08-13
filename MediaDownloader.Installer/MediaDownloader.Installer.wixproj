@@ -13,4 +13,8 @@
     <ProjectReference Include="..\MediaDownloader\MediaDownloader.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
+  </ItemGroup>
+
 </Project>

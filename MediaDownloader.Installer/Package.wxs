@@ -1,4 +1,5 @@
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <?define Manufacturer = "dLiX Software" ?>
   <?define ProductName = "MediaDownloader" ?>
   <?define UpgradeCode = "2A6BFC4E-0916-4702-AE9A-8817D74C83DD" ?>
@@ -16,6 +17,9 @@
       DowngradeErrorMessage="A newer or same version of [ProductName] is already installed." />
 
     <MediaTemplate EmbedCab="yes" />
+
+    <UIRef Id="WixUI_Common" />
+    <UIRef Id="SingleButtonInstallUI" />
 
     <Icon Id="AppIcon.ico" SourceFile="..\MediaDownloader.Presentation\Icons\appIcon.ico" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
