@@ -3,6 +3,7 @@ using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MediaDownloader.Services.Services;
 
@@ -28,7 +29,7 @@ public sealed class FfmpegService : IFfmpegService
     {
         if (!File.Exists(toolPath))
         {
-            throw new FileNotFoundException(string.Format(LogConstants.ToolNotFound, toolPath), toolPath);
+            throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolNotFound, toolPath), toolPath);
         }
 
         var startInfo = new ProcessStartInfo
@@ -43,7 +44,7 @@ public sealed class FfmpegService : IFfmpegService
         startInfo.ArgumentList.Add(ServiceConstants.Tools.VersionArgument);
 
         using var process = Process.Start(startInfo)
-            ?? throw new InvalidOperationException(string.Format(LogConstants.ToolStartFailed, toolPath));
+            ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolStartFailed, toolPath));
 
         using var cancellationRegistration = cancellationToken.Register(
             () => ProcessUtil.TryKill(process));

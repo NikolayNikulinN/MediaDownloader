@@ -5,7 +5,7 @@ using Wpf.Ui.Controls;
 
 namespace MediaDownloader.Presentation.Controls;
 
-internal partial class ToolDownloadProgressWindow : FluentWindow, INotifyPropertyChanged
+internal sealed partial class ToolDownloadProgressWindow : FluentWindow, INotifyPropertyChanged
 {
     private readonly string statusFormat;
     private bool canClose;
@@ -48,7 +48,7 @@ internal partial class ToolDownloadProgressWindow : FluentWindow, INotifyPropert
     }
 
     public void Report(string fileName) => StatusText = string.Format(
-                                                                       CultureInfo.CurrentUICulture,
+                                                                       CultureInfo.CurrentCulture,
                                                                        statusFormat,
                                                                        fileName);
 

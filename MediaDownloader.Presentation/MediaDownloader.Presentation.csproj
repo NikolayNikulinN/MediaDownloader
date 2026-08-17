@@ -4,6 +4,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NeutralLanguage>en</NeutralLanguage>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 

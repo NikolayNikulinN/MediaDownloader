@@ -263,7 +263,7 @@ public partial class HomePageViewModel : ObservableObject
         catch (Exception exception)
         {
             AnalysisStatus = exception.Message;
-            loggerWrapper.Write(string.Format(LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
+            loggerWrapper.Write(string.Format(CultureInfo.InvariantCulture, LogConstants.AnalyzeUrlFailed, exception.Message), LogLevel.Error);
             uiPopupService.ShowError(exception.Message);
         }
         finally
@@ -342,7 +342,7 @@ public partial class HomePageViewModel : ObservableObject
                     item.DownloadStatus = value.IsPostProcessing
                                                                  ? ResourceWrapper.ProcessingDownloadStatus
                                                                  : string.Format(
-                                                                                 CultureInfo.CurrentUICulture,
+                                                                                 CultureInfo.CurrentCulture,
                                                                                  ResourceWrapper.DownloadingStatusFormat,
                                                                                  value.Percentage);
             });
@@ -398,7 +398,7 @@ public partial class HomePageViewModel : ObservableObject
     private void UpdateDownloadStatus(
         UrlMediaItemViewModel item,
         int percentage) => item.DownloadStatus = string.Format(
-                                                                CultureInfo.CurrentUICulture,
+                                                                CultureInfo.CurrentCulture,
                                                                 ResourceWrapper.DownloadingStatusFormat,
                                                                 percentage);
 
@@ -589,7 +589,7 @@ public partial class HomePageViewModel : ObservableObject
             if (failedFileDeletionCount > 0)
             {
                 uiPopupService.ShowWarning(string.Format(
-                                                         CultureInfo.CurrentUICulture,
+                                                         CultureInfo.CurrentCulture,
                                                          ResourceWrapper.DeleteAllIncompleteWarningMessage,
                                                          string.Join(", ", failedItems)));
             }
@@ -672,7 +672,7 @@ public partial class HomePageViewModel : ObservableObject
             if (showErrorPopup)
             {
                 uiPopupService.ShowError(string.Format(
-                                                       CultureInfo.CurrentUICulture,
+                                                       CultureInfo.CurrentCulture,
                                                        ResourceWrapper.DeleteDownloadedFileFailedMessage,
                                                        exception.Message));
             }

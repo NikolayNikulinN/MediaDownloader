@@ -4,6 +4,8 @@ using MediaDownloader.Logger.Enums;
 using MediaDownloader.Services.Abstract;
 using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Models;
+using System.Globalization;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace MediaDownloader.Services.Services;
@@ -53,8 +55,7 @@ public sealed class XmlService : IXmlService
 
         try
         {
-            using var stream = File.OpenRead(settingsFilePath);
-            var settings = SettingsSerializer.Deserialize(stream) as ApplicationSettings ?? CreateDefaultSettings();
+            var settings = DeserializeXml<ApplicationSettings>(settingsFilePath, SettingsSerializer) ?? CreateDefaultSettings();
 
             if (string.IsNullOrWhiteSpace(settings.SaveFolderPath))
             {
@@ -92,8 +93,7 @@ public sealed class XmlService : IXmlService
 
         try
         {
-            using var stream = File.OpenRead(dataFilePath);
-            return DataSerializer.Deserialize(stream) as MediaDownloaderState ?? new MediaDownloaderState();
+            return DeserializeXml<MediaDownloaderState>(dataFilePath, DataSerializer) ?? new MediaDownloaderState();
         }
         catch (Exception exception)
         {
@@ -120,6 +120,19 @@ public sealed class XmlService : IXmlService
     private static string GetDefaultSaveFolderPath() => Path.Combine(
                                                                      Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                                                                      ServiceConstants.Xml.DefaultDownloadsFolderName);
+
+    private static T? DeserializeXml<T>(string filePath, XmlSerializer serializer)
+    {
+        var settings = new XmlReaderSettings
+        {
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null
+        };
+
+        using var stream = File.OpenRead(filePath);
+        using var reader = XmlReader.Create(stream, settings);
+        return serializer.Deserialize(reader) is T value ? value : default;
+    }
 
     private void SaveXml(
                           string filePath,
@@ -149,6 +162,7 @@ public sealed class XmlService : IXmlService
         catch (Exception exception)
         {
             loggerWrapper.Write(string.Format(
+                                               CultureInfo.InvariantCulture,
                                                LogConstants.XmlSaveFailed,
                                                filePath,
                                                exception.Message),
@@ -158,6 +172,7 @@ public sealed class XmlService : IXmlService
     }
 
     private void LogLoadFailure(string filePath, Exception exception) => loggerWrapper.Write(string.Format(
+                                                                                                            CultureInfo.InvariantCulture,
                                                                                                             LogConstants.XmlLoadFailed,
                                                                                                             filePath,
                                                                                                             exception.Message),

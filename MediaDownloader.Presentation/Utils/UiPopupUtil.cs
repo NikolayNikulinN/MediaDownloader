@@ -3,6 +3,7 @@ using MediaDownloader.Presentation.Constants;
 using MediaDownloader.Presentation.Controls;
 using MediaDownloader.Presentation.Models;
 using MediaDownloader.Presentation.Resources;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -70,7 +71,7 @@ public sealed class UiPopupUtil : IUiPopupUtil
                                     missingTools.Select(tool => $"{resourceWrapper.ListItemPrefix}{tool}"));
 
         var message = string.Format(
-                                    System.Globalization.CultureInfo.CurrentUICulture,
+                                    CultureInfo.CurrentCulture,
                                     resourceWrapper.MissingToolsMessage,
                                     toolList);
 
@@ -94,7 +95,7 @@ public sealed class UiPopupUtil : IUiPopupUtil
                                      updates.Select(update => $"{resourceWrapper.ListItemPrefix}{update}"));
 
         var message = string.Format(
-                                     System.Globalization.CultureInfo.CurrentUICulture,
+                                     CultureInfo.CurrentCulture,
                                      resourceWrapper.ToolUpdatesAvailableMessage,
                                      updateList);
 

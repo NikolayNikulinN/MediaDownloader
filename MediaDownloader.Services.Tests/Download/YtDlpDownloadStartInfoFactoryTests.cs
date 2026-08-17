@@ -2,6 +2,7 @@ using MediaDownloader.Services.Constants;
 using MediaDownloader.Services.Download;
 using MediaDownloader.Services.Models;
 using MediaDownloader.Services.Tests.Constants;
+using System.Globalization;
 using Xunit;
 
 namespace MediaDownloader.Services.Tests.Download;
@@ -88,6 +89,7 @@ public sealed class YtDlpDownloadStartInfoFactoryTests
             Assert.True(
                 index >= 0,
                 string.Format(
+                    CultureInfo.InvariantCulture,
                     TestConstants.Download.MissingOrderedArgumentMessageFormat,
                     expectedValue,
                     searchStart - 1));

@@ -5,6 +5,7 @@ using MediaDownloader.Services.Models;
 using MediaDownloader.Services.Updates;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 
 namespace MediaDownloader.Services.Services;
@@ -89,7 +90,7 @@ public sealed class ToolUpdateService : IToolUpdateService
     {
         if (!File.Exists(toolPath))
         {
-            throw new FileNotFoundException(string.Format(LogConstants.ToolNotFound, toolPath), toolPath);
+            throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolNotFound, toolPath), toolPath);
         }
 
         var startInfo = new ProcessStartInfo
@@ -102,7 +103,7 @@ public sealed class ToolUpdateService : IToolUpdateService
         };
         startInfo.ArgumentList.Add(argument);
 
-        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException(string.Format(LogConstants.ToolStartFailed, toolPath));
+        using var process = Process.Start(startInfo) ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolStartFailed, toolPath));
         using var cancellationRegistration = cancellationToken.Register(() => ProcessUtil.TryKill(process));
 
         var output = await process.StandardOutput.ReadLineAsync(cancellationToken);

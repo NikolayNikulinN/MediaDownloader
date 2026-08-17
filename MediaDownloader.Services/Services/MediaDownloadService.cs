@@ -5,6 +5,7 @@ using MediaDownloader.Services.Download;
 using MediaDownloader.Services.Models;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MediaDownloader.Services.Services;
 
@@ -26,7 +27,7 @@ public sealed class MediaDownloadService : IMediaDownloadService
         var ytDlpPath = ToolPathResolver.Resolve(ServiceConstants.Tools.YtDlpFileName);
         if (!File.Exists(ytDlpPath))
         {
-            throw new FileNotFoundException(string.Format(LogConstants.ToolNotFound, ytDlpPath), ytDlpPath);
+            throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolNotFound, ytDlpPath), ytDlpPath);
         }
 
         Directory.CreateDirectory(request.OutputFolder);

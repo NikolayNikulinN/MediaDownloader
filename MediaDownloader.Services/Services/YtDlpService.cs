@@ -7,6 +7,7 @@ using MediaDownloader.Services.Models;
 using MediaDownloader.Services.Parsing;
 using MediaDownloader.Services.Utils;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace MediaDownloader.Services.Services;
 
@@ -36,7 +37,7 @@ public sealed class YtDlpService : IYtDlpService
 
         if (!File.Exists(ytDlpPath))
         {
-            throw new FileNotFoundException(string.Format(LogConstants.ToolNotFound, ytDlpPath), ytDlpPath);
+            throw new FileNotFoundException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolNotFound, ytDlpPath), ytDlpPath);
         }
 
         var startInfo = new ProcessStartInfo
@@ -71,7 +72,7 @@ public sealed class YtDlpService : IYtDlpService
 
         if (process.ExitCode != 0)
         {
-            loggerWrapper.Write(string.Format(LogConstants.YtDlpAnalyzeFailed, url, error), LogLevel.Error);
+            loggerWrapper.Write(string.Format(CultureInfo.InvariantCulture, LogConstants.YtDlpAnalyzeFailed, url, error), LogLevel.Error);
             throw new InvalidOperationException(error);
         }
 

@@ -100,7 +100,7 @@ public partial class App : Application
                          LogLevel.Error);
 
             popupUtil.ShowError(string.Format(
-                                               CultureInfo.CurrentUICulture,
+                                               CultureInfo.CurrentCulture,
                                                resourceWrapper.ToolDownloadFailedMessage,
                                                exception.Message));
             return false;

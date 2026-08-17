@@ -174,7 +174,7 @@ public partial class MainPageViewModel : ObservableObject
                                 LogLevel.Error);
 
             uiPopupUtil.ShowError(string.Format(
-                                                 CultureInfo.CurrentUICulture,
+                                                 CultureInfo.CurrentCulture,
                                                  ResourceWrapper.ToolUpdateFailedMessage,
                                                  exception.Message));
         }
@@ -199,7 +199,7 @@ public partial class MainPageViewModel : ObservableObject
 
     private string CreateUpdateDescription(ToolUpdateInfo update) =>
                                                                      string.Format(
-                                                                                    CultureInfo.CurrentUICulture,
+                                                                                    CultureInfo.CurrentCulture,
                                                                                     ResourceWrapper.ToolUpdateDescriptionFormat,
                                                                                     update.DisplayName,
                                                                                     update.CurrentVersion,

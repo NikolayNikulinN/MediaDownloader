@@ -1,6 +1,7 @@
 using MediaDownloader.Logger.Constants;
 using Serilog;
 using Serilog.Events;
+using System.Globalization;
 
 namespace MediaDownloader.Logger.Configuration;
 
@@ -49,6 +50,7 @@ internal static class FileLoggerConfigurator
                     logFilePathPattern,
                     restrictedToMinimumLevel: LogEventLevel.Information,
                     outputTemplate: LogConstants.OutputTemplate,
+                    formatProvider: CultureInfo.InvariantCulture,
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: LogConstants.RetainedFileCountLimit)
                 .CreateLogger();
@@ -81,7 +83,7 @@ internal static class FileLoggerConfigurator
         {
             Directory.CreateDirectory(directoryPath);
             var probeFileName = string.Format(
-                System.Globalization.CultureInfo.InvariantCulture,
+                CultureInfo.InvariantCulture,
                 LogConstants.WriteProbeFileNameFormat,
                 Guid.NewGuid());
             var probeFilePath = Path.Combine(directoryPath, probeFileName);

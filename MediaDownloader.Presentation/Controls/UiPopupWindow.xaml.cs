@@ -4,7 +4,7 @@ using Wpf.Ui.Controls;
 
 namespace MediaDownloader.Presentation.Controls;
 
-internal partial class UiPopupWindow : FluentWindow
+internal sealed partial class UiPopupWindow : FluentWindow
 {
     public UiPopupWindow(
         string message,
