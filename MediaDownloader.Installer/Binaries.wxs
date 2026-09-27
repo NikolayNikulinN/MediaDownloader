@@ -31,6 +31,9 @@
       <Component Id="YtDlpTool" Directory="ToolsFolder" Guid="B7A8D856-258F-44C5-9607-26141991E972">
         <File Id="YtDlpExe" Source="..\MediaDownloader.Services\Tools\yt-dlp.exe" KeyPath="yes" />
       </Component>
+      <Component Id="DenoTool" Directory="ToolsFolder" Guid="B9F278DC-0BE9-4A85-95B4-5F67D78D80AC">
+        <File Id="DenoExe" Source="..\MediaDownloader.Services\Tools\deno.exe" KeyPath="yes" />
+      </Component>
     </ComponentGroup>
   </Fragment>
 </Wix>

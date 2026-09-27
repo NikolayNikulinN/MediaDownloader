@@ -50,6 +50,8 @@ public sealed class YtDlpService : IYtDlpService
         };
 
         startInfo.ArgumentList.Add(ServiceConstants.YtDlp.DumpJsonArgument);
+        startInfo.ArgumentList.Add(ServiceConstants.YtDlp.JsRuntimesArgument);
+        startInfo.ArgumentList.Add(ServiceConstants.YtDlp.DenoRuntimePrefix + ToolPathResolver.Resolve(ServiceConstants.Tools.DenoFileName));
         startInfo.ArgumentList.Add(ServiceConstants.YtDlp.SkipDownloadArgument);
         startInfo.ArgumentList.Add(ServiceConstants.YtDlp.NoPlaylistArgument);
         startInfo.ArgumentList.Add(url);

@@ -49,10 +49,16 @@ public sealed class FfmpegService : IFfmpegService
         using var cancellationRegistration = cancellationToken.Register(
             () => ProcessUtil.TryKill(process));
 
-        var output = await process.StandardOutput.ReadLineAsync(cancellationToken);
+        var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);
-
-        return output ?? string.Empty;
+        var output = await outputTask;
+        var error = await errorTask;
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException(error);
+        }
+        return output.Split('\n')[0].Trim();
     }
 
     private static string GetToolPath(string fileName) => ToolPathResolver.Resolve(fileName);

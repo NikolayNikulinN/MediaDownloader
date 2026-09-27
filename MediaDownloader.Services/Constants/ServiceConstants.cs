@@ -13,6 +13,14 @@ public static class ServiceConstants
         public const string FolderName = "Tools";
 
         public const string YtDlpFileName = "yt-dlp.exe";
+        public const string DenoFileName = "deno.exe";
+        public const string DenoDownloadUrl = "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip";
+        public const string DenoLatestReleaseApiUrl = "https://api.github.com/repos/denoland/deno/releases/latest";
+        public const string DenoDisplayName = "Deno";
+        public const int UpdateCheckTimeoutSeconds = 60;
+        public const int DownloadIdleTimeoutSeconds = 30;
+        public const int DownloadBufferSize = 81920;
+        public const string DownloadStalled = "Tool download stopped receiving data.";
 
         public const string FfmpegFileName = "ffmpeg.exe";
 
@@ -56,7 +64,7 @@ public static class ServiceConstants
 
         public const string DownloadedExecutableIsInvalid = "The downloaded executable is invalid.";
 
-        public const int DownloadMaxRetryAttempts = 4;
+        public const int DownloadMaxRetryAttempts = 2;
 
         public const int DownloadRetryDelaySeconds = 2;
 
@@ -78,7 +86,8 @@ public static class ServiceConstants
         [
             YtDlpFileName,
             FfmpegFileName,
-            FfprobeFileName
+            FfprobeFileName,
+            DenoFileName
         ];
     }
 
@@ -87,6 +96,8 @@ public static class ServiceConstants
     /// </summary>
     public static class YtDlp
     {
+        public const string JsRuntimesArgument = "--js-runtimes";
+        public const string DenoRuntimePrefix = "deno:";
         public const string DumpJsonArgument = "--dump-json";
 
         public const string SkipDownloadArgument = "--skip-download";

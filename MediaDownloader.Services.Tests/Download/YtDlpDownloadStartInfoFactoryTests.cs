@@ -24,6 +24,8 @@ public sealed class YtDlpDownloadStartInfoFactoryTests
         var arguments = startInfo.ArgumentList.ToArray();
 
         Assert.Contains(ServiceConstants.Download.FormatArgument, arguments);
+        AssertContainsInOrder(arguments, ServiceConstants.YtDlp.JsRuntimesArgument,
+            ServiceConstants.YtDlp.DenoRuntimePrefix + MediaDownloader.Services.Utils.ToolPathResolver.Resolve(ServiceConstants.Tools.DenoFileName));
         Assert.Equal(
             TestConstants.Download.VideoFormatSelector720p,
             arguments[Array.IndexOf(arguments, ServiceConstants.Download.FormatArgument) + 1]);

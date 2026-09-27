@@ -46,6 +46,8 @@ internal static class YtDlpDownloadStartInfoFactory
                                             string temporaryDirectoryPath)
     {
         startInfo.ArgumentList.Add(ServiceConstants.YtDlp.NoPlaylistArgument);
+        startInfo.ArgumentList.Add(ServiceConstants.YtDlp.JsRuntimesArgument);
+        startInfo.ArgumentList.Add(ServiceConstants.YtDlp.DenoRuntimePrefix + ToolPathResolver.Resolve(ServiceConstants.Tools.DenoFileName));
         startInfo.ArgumentList.Add(ServiceConstants.Download.IgnoreConfigArgument);
         startInfo.ArgumentList.Add(ServiceConstants.Download.NoSimulateArgument);
         startInfo.ArgumentList.Add(ServiceConstants.Download.NoUpdateArgument);
@@ -60,7 +62,7 @@ internal static class YtDlpDownloadStartInfoFactory
         startInfo.ArgumentList.Add(ServiceConstants.Download.PrintArgument);
         startInfo.ArgumentList.Add(ServiceConstants.Download.AfterMoveFilePathTemplate);
         startInfo.ArgumentList.Add(ServiceConstants.Download.FfmpegLocationArgument);
-        startInfo.ArgumentList.Add(ToolPathResolver.ToolsDirectoryPath);
+        startInfo.ArgumentList.Add(ToolPathResolver.Resolve(ServiceConstants.Tools.FfmpegFileName));
         startInfo.ArgumentList.Add(ServiceConstants.Download.PathsArgument);
         startInfo.ArgumentList.Add($"{ServiceConstants.Download.TempPathPrefix}{temporaryDirectoryPath}");
         startInfo.ArgumentList.Add(ServiceConstants.Download.PathsArgument);

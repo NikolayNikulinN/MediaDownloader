@@ -79,8 +79,13 @@ The app uses these external tools:
 - `yt-dlp.exe`
 - `ffmpeg.exe`
 - `ffprobe.exe`
+- `deno.exe` (JavaScript runtime required by yt-dlp for YouTube)
 
 On startup, the app checks whether required tools are available and can download missing tools after user confirmation.
+
+Tool updates are saved to `%LOCALAPPDATA%\MediaDownloader\Tools`, so installed applications do not need administrator rights to update them. Updated tools take precedence over the bundled copies in the installation folder. Version checks time out after 60 seconds; downloads stop after 30 seconds without receiving data and retry at most twice.
+
+The MSI includes Deno. Before building the installer, place `deno.exe` from the official `denoland/deno` Windows x64 release archive in `MediaDownloader.Services/Tools`, alongside the other tools. YouTube members-only videos still require an authorized account with the appropriate channel membership; updating tools does not grant access.
 
 ## Dependencies
 

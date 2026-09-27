@@ -31,21 +31,28 @@ public sealed class ToolBootstrapService : IToolBootstrapService
     public ToolBootstrapService(
                                 HttpClient httpClient,
                                 ILoggerWrapper loggerWrapper)
+        : this(httpClient, loggerWrapper, ToolPathResolver.ToolsDirectoryPath)
+    {
+    }
+
+    internal ToolBootstrapService(HttpClient httpClient, ILoggerWrapper loggerWrapper, string toolsDirectoryPath)
     {
         ArgumentNullException.ThrowIfNull(httpClient);
         ArgumentNullException.ThrowIfNull(loggerWrapper);
 
         this.httpClient = httpClient;
         this.loggerWrapper = loggerWrapper;
+        ToolsDirectoryPath = toolsDirectoryPath;
         downloadPipeline = CreateDownloadPipeline();
     }
 
     /// <inheritdoc />
-    public string ToolsDirectoryPath => ToolPathResolver.ToolsDirectoryPath;
+    public string ToolsDirectoryPath { get; }
 
     /// <inheritdoc />
     public IReadOnlyList<string> GetMissingTools() => ServiceConstants.Tools.RequiredFileNames
-                                                                                               .Where(fileName => !File.Exists(ToolPathResolver.Resolve(fileName)))
+                                                                                               .Where(fileName => !File.Exists(Path.Combine(ToolsDirectoryPath, fileName))
+                                                                                                   && !File.Exists(Path.Combine(AppContext.BaseDirectory, ServiceConstants.Tools.FolderName, fileName)))
                                                                                                .ToArray();
 
     /// <inheritdoc />
@@ -68,7 +75,13 @@ public sealed class ToolBootstrapService : IToolBootstrapService
             return;
         }
 
-        Directory.CreateDirectory(ToolPathResolver.ToolsDirectoryPath);
+        Directory.CreateDirectory(ToolsDirectoryPath);
+
+        if (missingTools.Contains(ServiceConstants.Tools.DenoFileName, StringComparer.OrdinalIgnoreCase))
+        {
+            progress?.Report(ServiceConstants.Tools.DenoFileName);
+            await DownloadDenoAsync(cancellationToken);
+        }
 
         if (missingTools.Contains(ServiceConstants.Tools.YtDlpFileName, StringComparer.OrdinalIgnoreCase))
         {
@@ -138,7 +151,7 @@ public sealed class ToolBootstrapService : IToolBootstrapService
                                          string destinationFileName,
                                          CancellationToken cancellationToken)
     {
-        var destinationPath = Path.Combine(ToolPathResolver.ToolsDirectoryPath, destinationFileName);
+        var destinationPath = Path.Combine(ToolsDirectoryPath, destinationFileName);
         var temporaryPath = destinationPath + ServiceConstants.Tools.TemporaryFileExtension;
 
         await DownloadToTemporaryFileAsync(
@@ -189,10 +202,13 @@ public sealed class ToolBootstrapService : IToolBootstrapService
                                          CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, sourceUrl);
+        using var headerTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        headerTimeout.CancelAfter(TimeSpan.FromSeconds(ServiceConstants.Tools.DownloadIdleTimeoutSeconds));
         using var response = await httpClient.SendAsync(
                                                          request,
                                                          HttpCompletionOption.ResponseHeadersRead,
-                                                         cancellationToken);
+                                                         headerTimeout.Token);
+        headerTimeout.CancelAfter(Timeout.InfiniteTimeSpan);
         response.EnsureSuccessStatusCode();
 
         var expectedLength = response.Content.Headers.ContentLength;
@@ -202,10 +218,29 @@ public sealed class ToolBootstrapService : IToolBootstrapService
                                                             FileMode.Create,
                                                             FileAccess.Write,
                                                             FileShare.None,
-                                                            bufferSize: 81920,
+                                                            bufferSize: ServiceConstants.Tools.DownloadBufferSize,
                                                             useAsync: true);
 
-        await sourceStream.CopyToAsync(destinationStream, cancellationToken);
+        var buffer = new byte[ServiceConstants.Tools.DownloadBufferSize];
+        while (true)
+        {
+            using var idleTimeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            idleTimeout.CancelAfter(TimeSpan.FromSeconds(ServiceConstants.Tools.DownloadIdleTimeoutSeconds));
+            int bytesRead;
+            try
+            {
+                bytesRead = await sourceStream.ReadAsync(buffer, idleTimeout.Token);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutRejectedException(ServiceConstants.Tools.DownloadStalled);
+            }
+            if (bytesRead == 0)
+            {
+                break;
+            }
+            await destinationStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+        }
         await destinationStream.FlushAsync(cancellationToken);
 
         var downloadedLength = destinationStream.Length;
@@ -222,6 +257,30 @@ public sealed class ToolBootstrapService : IToolBootstrapService
                                                    ServiceConstants.Tools.DownloadedFileSizeMismatch,
                                                    expectedLength.Value,
                                                    downloadedLength));
+        }
+    }
+
+    private async Task DownloadDenoAsync(CancellationToken cancellationToken)
+    {
+        var archivePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}{ServiceConstants.Tools.ZipFileExtension}");
+        var destinationPath = Path.Combine(ToolsDirectoryPath, ServiceConstants.Tools.DenoFileName);
+        var temporaryPath = destinationPath + ServiceConstants.Tools.TemporaryFileExtension;
+        try
+        {
+            await DownloadToTemporaryFileAsync(ServiceConstants.Tools.DenoDownloadUrl, archivePath, path =>
+            {
+                using var archive = ZipFile.OpenRead(path);
+                var entry = archive.GetEntry(ServiceConstants.Tools.DenoFileName)
+                    ?? throw new InvalidDataException(ServiceConstants.Tools.DownloadedExecutableIsInvalid);
+                entry.ExtractToFile(temporaryPath, overwrite: true);
+                ValidateWindowsExecutable(temporaryPath);
+            }, cancellationToken);
+            File.Move(temporaryPath, destinationPath, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(archivePath);
+            File.Delete(temporaryPath);
         }
     }
 
@@ -270,7 +329,7 @@ public sealed class ToolBootstrapService : IToolBootstrapService
         }
     }
 
-    private static ExtractedToolFile ExtractToolToTemporaryFile(ZipArchive archive, string fileName)
+    private ExtractedToolFile ExtractToolToTemporaryFile(ZipArchive archive, string fileName)
     {
         var entry = archive.Entries.FirstOrDefault(candidate =>
                                                                 candidate.FullName.EndsWith($"/bin/{fileName}",
@@ -280,7 +339,7 @@ public sealed class ToolBootstrapService : IToolBootstrapService
                                                                                                               ServiceConstants.Tools.ArchiveEntryNotFound,
                                                                                                               fileName));
 
-        var destinationPath = Path.Combine(ToolPathResolver.ToolsDirectoryPath, fileName);
+        var destinationPath = Path.Combine(ToolsDirectoryPath, fileName);
         var temporaryPath = destinationPath + ServiceConstants.Tools.TemporaryFileExtension;
         var backupPath = destinationPath + ServiceConstants.Tools.BackupFileExtension;
 

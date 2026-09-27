@@ -33,7 +33,9 @@ public sealed class ToolUpdateService : IToolUpdateService
     /// <inheritdoc />
     public async Task<IReadOnlyList<ToolUpdateInfo>> CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
-        var results = await Task.WhenAll(CheckYtDlpAsync(cancellationToken), CheckFfmpegAsync(cancellationToken));
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(ServiceConstants.Tools.UpdateCheckTimeoutSeconds));
+        var results = await Task.WhenAll(CheckYtDlpAsync(timeout.Token), CheckFfmpegAsync(timeout.Token), CheckDenoAsync(timeout.Token));
         return results
                        .Where(update => update is not null)
                        .Cast<ToolUpdateInfo>()
@@ -60,6 +62,23 @@ public sealed class ToolUpdateService : IToolUpdateService
                                                                 LatestVersion = latestVersion,
                                                                 FileNames = [ServiceConstants.Tools.YtDlpFileName]
                                                             };
+    }
+
+    private async Task<ToolUpdateInfo?> CheckDenoAsync(CancellationToken cancellationToken)
+    {
+        var output = await GetToolOutputAsync(ToolPathResolver.Resolve(ServiceConstants.Tools.DenoFileName),
+            ServiceConstants.Tools.YtDlpVersionArgument, cancellationToken);
+        var currentVersion = output.Split(' ', StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(1) ?? output;
+        var response = await httpClient.GetStringAsync(ServiceConstants.Tools.DenoLatestReleaseApiUrl, cancellationToken);
+        using var document = JsonDocument.Parse(response);
+        var latestVersion = document.RootElement.GetProperty(ServiceConstants.Tools.GitHubTagNameProperty).GetString()?.TrimStart('v') ?? string.Empty;
+        return ToolVersionComparer.VersionsMatch(currentVersion, latestVersion) ? null : new ToolUpdateInfo
+        {
+            DisplayName = ServiceConstants.Tools.DenoDisplayName,
+            CurrentVersion = currentVersion,
+            LatestVersion = latestVersion,
+            FileNames = [ServiceConstants.Tools.DenoFileName]
+        };
     }
 
     private async Task<ToolUpdateInfo?> CheckFfmpegAsync(CancellationToken cancellationToken)
@@ -106,9 +125,16 @@ public sealed class ToolUpdateService : IToolUpdateService
         using var process = Process.Start(startInfo) ?? throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, LogConstants.ToolStartFailed, toolPath));
         using var cancellationRegistration = cancellationToken.Register(() => ProcessUtil.TryKill(process));
 
-        var output = await process.StandardOutput.ReadLineAsync(cancellationToken);
+        var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);
-        return output?.Trim() ?? string.Empty;
+        var output = await outputTask;
+        var error = await errorTask;
+        if (process.ExitCode != 0)
+        {
+            throw new InvalidOperationException(error);
+        }
+        return output.Split('\n')[0].Trim();
     }
 
 }
